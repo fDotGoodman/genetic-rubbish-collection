@@ -1,4 +1,3 @@
-/bin/
 /.settings
 /batch
 /bin
@@ -10,4 +9,6 @@
 /lib
 /output
 /repast-licenses
+/icons
+/docs
 
