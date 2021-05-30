@@ -9,6 +9,7 @@ import repast.simphony.util.SimUtilities;
 
 import java.util.List;
 
+import components.AgentState;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
@@ -16,8 +17,8 @@ import repast.simphony.random.RandomHelper;
 
 public class Collector extends Agent {
 
-	private ContinuousSpace<Object> space;
-	private Grid<Object> grid;
+	public ContinuousSpace<Object> space;
+	public Grid<Object> grid;
 	private AgentState state;
 	
 	private int speed;
