@@ -8,8 +8,10 @@ import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.SimUtilities;
 
 import java.util.List;
+import java.util.Random;
 
 import components.AgentState;
+import components.Solution;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
@@ -20,8 +22,11 @@ public class Collector extends Agent {
 	public ContinuousSpace<Object> space;
 	public Grid<Object> grid;
 	private AgentState state;
+	private Random r;
+	private Solution currentSolution;
 	
 	private int speed, viewDistance;
+	
 	
 	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance) {
 		this.space = space;
@@ -29,6 +34,8 @@ public class Collector extends Agent {
 		this.speed = speed;
 		this.state = AgentState.MAP_STATE;
 		this.viewDistance = viewDistance;
+		this.currentSolution = new Solution(this);
+		r = new Random();
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -39,16 +46,19 @@ public class Collector extends Agent {
 				GridCellNgh<Rubbish> nghCreator = new GridCellNgh<Rubbish>(grid, pt, Rubbish.class, viewDistance, viewDistance);
 				List<GridCell<Rubbish>> gridCells = nghCreator.getNeighborhood(true);
 				SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
-
-				GridPoint pointWithMostRubbish = null;
 				int maxCount = -1;
 				for(GridCell<Rubbish> cell : gridCells) {
-					if(cell.size() > maxCount) {
-						pointWithMostRubbish = cell.getPoint();
-						maxCount = cell.size();
+					if(cell.size() > 0) {
+						if(!currentSolution.getSolutionRepresentation().contains(cell.getPoint())) {
+							//System.out.println("Added rubbish at coordinates X=" + cell.getPoint().getX() + ", Y=" + cell.getPoint().getY());
+							currentSolution.addPoint(cell.getPoint());
+						}
+						else {
+							//System.out.println("Not adding X=" + cell.getPoint().getX() + ", Y=" + cell.getPoint().getY());
+						}
 					}
 				}
-				moveByDistance(space, grid, pointWithMostRubbish, speed);
+				moveRandomly(space, grid, r, speed);
 				
 				
 				

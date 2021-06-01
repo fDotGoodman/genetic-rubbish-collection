@@ -3,24 +3,28 @@ package components;
 import java.util.ArrayList;
 
 import agents.Collector;
-import repast.simphony.space.continuous.NdPoint;
+import repast.simphony.space.grid.GridPoint;
 
 public class Solution {
 
 	private double cost;
 	private int solutionLength;
-	private ArrayList<NdPoint> solutionRepresentation;
+	private ArrayList<GridPoint> solutionRepresentation;
 	private Collector host;
 	
 	public Solution(Collector hostAgent) {
-		this.solutionRepresentation = new ArrayList<NdPoint>();
+		this.solutionRepresentation = new ArrayList<GridPoint>();
 		this.host = hostAgent;
 	}
 	
-	public Solution(Collector hostAgent, ArrayList<NdPoint> solRep) {
+	public Solution(Collector hostAgent, ArrayList<GridPoint> solRep) {
 		this.solutionRepresentation = solRep;
 		this.host = hostAgent;
 		finaliseCollection();
+	}
+	
+	public ArrayList<GridPoint> getSolutionRepresentation() {
+		return this.solutionRepresentation;
 	}
 	
 	public void finaliseCollection() {
@@ -28,13 +32,14 @@ public class Solution {
 		this.cost = calculateCostInclusive();
 	}
 	
-	public void addPoint(NdPoint newPoint) {
+	public void addPoint(GridPoint newPoint) {
+		//System.out.println("Added rubbish at coordinates X=" + newPoint.getX() + ", Y=" + newPoint.getY());
 		solutionRepresentation.add(newPoint);
 	}
 	
 	public double calculateCostInclusive() {
 		double accumulatedCost = 0;
-		accumulatedCost += distanceBetweenTwoPoints(host.space.getLocation(host), solutionRepresentation.get(0));
+		accumulatedCost += distanceBetweenTwoPoints(host.grid.getLocation(host), solutionRepresentation.get(0));
 		accumulatedCost += calculateCostExclusive();
 		
 		return accumulatedCost;
@@ -49,7 +54,7 @@ public class Solution {
 		return accumulatedCost;
 	}
 	
-	public double distanceBetweenTwoPoints(NdPoint point1, NdPoint point2) {
+	public double distanceBetweenTwoPoints(GridPoint point1, GridPoint point2) {
 		return Math.sqrt(Math.pow(point1.getX() - point2.getX(), 2) + Math.pow(point1.getY() - point2.getY(), 2));
 	}
 	
