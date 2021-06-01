@@ -1,5 +1,9 @@
 package controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import agents.Collector;
 import agents.Rubbish;
 import repast.simphony.context.Context;
@@ -9,6 +13,8 @@ import repast.simphony.context.space.grid.GridFactory;
 import repast.simphony.context.space.grid.GridFactoryFinder;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.ISchedule;
+import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
@@ -23,7 +29,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	ContinuousSpace<Object> space;
 	Grid<Object> grid;
 	
-	int dimensions, rubbishCount, collectorCount, collectorSpeed;
+	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick;
 	
 	@Override
 	public Context build(Context<Object> context) {
@@ -33,7 +39,12 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		this.dimensions = parameters.getInteger("dimensions");
 		this.rubbishCount = parameters.getInteger("rubbishCount");
 		this.collectorCount = parameters.getInteger("collectorCount");
-		this.collectorCount = parameters.getInteger("collectorSpeed");
+		this.collectorSpeed = parameters.getInteger("collectorSpeed");
+		this.finishMapTick = parameters.getInteger("mapTerminationTick");
+		
+	    ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+	    ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(finishMapTick);
+	    schedule.schedule(scheduleParams, this, "triggerMapEnd", context);
 		
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
@@ -57,8 +68,14 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 			grid.moveTo(obj, (int)pt.getX(), (int)pt.getY());
 		}
 		
-		
 		return context;
+	}
+	
+	public void triggerMapEnd(Context context) {
+		Stream<Collector> collectorStream = context.getObjectsAsStream(Collector.class);
+		List<Collector> collectorList = collectorStream.collect(Collectors.toList());
+		collectorList.forEach((collector) -> collector.moveToCalculationPhase());
+		
 	}
 
 }

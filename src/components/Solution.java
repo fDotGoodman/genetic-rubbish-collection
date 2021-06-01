@@ -13,8 +13,14 @@ public class Solution {
 	private Collector host;
 	
 	public Solution(Collector hostAgent) {
-		solutionRepresentation = new ArrayList<NdPoint>();
-		host = hostAgent;
+		this.solutionRepresentation = new ArrayList<NdPoint>();
+		this.host = hostAgent;
+	}
+	
+	public Solution(Collector hostAgent, ArrayList<NdPoint> solRep) {
+		this.solutionRepresentation = solRep;
+		this.host = hostAgent;
+		finaliseCollection();
 	}
 	
 	public void finaliseCollection() {

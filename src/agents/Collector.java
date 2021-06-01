@@ -26,8 +26,8 @@ public class Collector extends Agent {
 	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed) {
 		this.space = space;
 		this.grid = grid;
-		this.state = AgentState.MAP_STATE;
 		this.speed = speed;
+		this.state = AgentState.MAP_STATE;
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -48,6 +48,8 @@ public class Collector extends Agent {
 					}
 				}
 				moveByDistance(space, grid, pointWithMostRubbish, speed);
+				
+				
 				
 				break;
 			
@@ -73,5 +75,14 @@ public class Collector extends Agent {
 			space.moveByVector(this, speed, angle, 0);
 			grid.moveTo(this, (int) myPoint.getX(), (int) myPoint.getY());
 		}
+	}
+	
+	public void moveToCalculationPhase() {
+		this.state = AgentState.CALCULATION_STATE;
+		System.out.println("This shit bussin, respectfully");
+	}
+	
+	public void moveToActionPhase() {
+		this.state = AgentState.ACTION_STATE;
 	}
 }

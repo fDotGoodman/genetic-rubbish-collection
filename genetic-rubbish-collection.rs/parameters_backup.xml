@@ -10,6 +10,11 @@
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
+				<parameter name="mapTerminationTick" displayName="MAP_PHASE End Tick" type="int" 
+						defaultValue="1000" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+											/>
 				<parameter name="collectorSpeed" displayName="Collector Speed" type="int" 
 						defaultValue="1" 
 						isReadOnly="false" 
