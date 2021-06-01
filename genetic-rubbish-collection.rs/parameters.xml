@@ -25,6 +25,11 @@
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
+				<parameter name="viewDistance" displayName="Collector View Distance" type="int" 
+						defaultValue="5" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+											/>
 				<parameter name="dimensions" displayName="Dimensions" type="int" 
 						defaultValue="100" 
 						isReadOnly="false" 

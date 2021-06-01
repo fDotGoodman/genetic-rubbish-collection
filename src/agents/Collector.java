@@ -21,13 +21,14 @@ public class Collector extends Agent {
 	public Grid<Object> grid;
 	private AgentState state;
 	
-	private int speed;
+	private int speed, viewDistance;
 	
-	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed) {
+	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance) {
 		this.space = space;
 		this.grid = grid;
 		this.speed = speed;
 		this.state = AgentState.MAP_STATE;
+		this.viewDistance = viewDistance;
 	}
 	
 	@ScheduledMethod(start = 1, interval = 1)
@@ -35,7 +36,7 @@ public class Collector extends Agent {
 		switch(state) {
 			case MAP_STATE:
 				GridPoint pt = grid.getLocation(this);
-				GridCellNgh<Rubbish> nghCreator = new GridCellNgh<Rubbish>(grid, pt, Rubbish.class, 1, 1);
+				GridCellNgh<Rubbish> nghCreator = new GridCellNgh<Rubbish>(grid, pt, Rubbish.class, viewDistance, viewDistance);
 				List<GridCell<Rubbish>> gridCells = nghCreator.getNeighborhood(true);
 				SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
 
