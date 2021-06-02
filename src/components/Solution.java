@@ -27,9 +27,21 @@ public class Solution {
 		return this.solutionRepresentation;
 	}
 	
+	public void setSolutionRepresentation(ArrayList<GridPoint> solutionRepresentation) {
+		this.solutionRepresentation = solutionRepresentation;
+	}
+	
 	public void finaliseCollection() {
 		solutionLength = solutionRepresentation.size();
 		this.cost = calculateCostInclusive();
+	}
+	
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+	
+	public double getCost() {
+		return this.cost;
 	}
 	
 	public void addPoint(GridPoint newPoint) {
@@ -39,7 +51,7 @@ public class Solution {
 	
 	public double calculateCostInclusive() {
 		double accumulatedCost = 0;
-		accumulatedCost += distanceBetweenTwoPoints(host.grid.getLocation(host), solutionRepresentation.get(0));
+		accumulatedCost += calculateEuclideanDistance(host.grid.getLocation(host), solutionRepresentation.get(0));
 		accumulatedCost += calculateCostExclusive();
 		
 		return accumulatedCost;
@@ -48,14 +60,25 @@ public class Solution {
 	public double calculateCostExclusive() {
 		double accumulatedCost = 0;
 		for(int i = 0; i < solutionLength - 1; i++) {
-			accumulatedCost += distanceBetweenTwoPoints(solutionRepresentation.get(i), solutionRepresentation.get(i + 1));
+			accumulatedCost += calculateEuclideanDistance(solutionRepresentation.get(i), solutionRepresentation.get(i + 1));
 		}
 		
 		return accumulatedCost;
 	}
 	
-	public double distanceBetweenTwoPoints(GridPoint point1, GridPoint point2) {
+	public double calculateEuclideanDistance(GridPoint point1, GridPoint point2) {
 		return Math.sqrt(Math.pow(point1.getX() - point2.getX(), 2) + Math.pow(point1.getY() - point2.getY(), 2));
 	}
 	
+	public Solution deepClone() {
+		ArrayList<GridPoint> cloneRepresentation = new ArrayList<GridPoint>();
+		
+		for(GridPoint p : solutionRepresentation) {
+			int[] coord = new int[2];
+			coord[0] = p.getX();
+			coord[1] = p.getY();
+			cloneRepresentation.add(new GridPoint(coord));
+		}
+		return new Solution(this.host, cloneRepresentation);
+	}
 }

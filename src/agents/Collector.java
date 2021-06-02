@@ -38,6 +38,7 @@ public class Collector extends Agent {
 		r = new Random();
 	}
 	
+	
 	@ScheduledMethod(start = 1, interval = 1)
 	public void step() {
 		switch(state) {
@@ -90,6 +91,7 @@ public class Collector extends Agent {
 	
 	public void moveToCalculationPhase() {
 		this.state = AgentState.CALCULATION_STATE;
+		this.currentSolution.finaliseCollection();
 		System.out.println("This shit bussin, respectfully");
 	}
 	
