@@ -34,6 +34,7 @@ public class Solution {
 	public void finaliseCollection() {
 		solutionLength = solutionRepresentation.size();
 		this.cost = calculateCostInclusive();
+		printRoute();
 	}
 	
 	public void setCost(double cost) {
@@ -80,5 +81,14 @@ public class Solution {
 			cloneRepresentation.add(new GridPoint(coord));
 		}
 		return new Solution(this.host, cloneRepresentation);
+	}
+	
+	public void printRoute() {
+		String route = new String("Route Length: " + solutionRepresentation.size() + ", Route: ");
+		route += "(" + solutionRepresentation.get(0).getX() + "," + solutionRepresentation.get(0).getY() + ")";
+		for(int i = 1; i < solutionRepresentation.size(); i++) {
+			route+= " -> (" + solutionRepresentation.get(i).getX() + "," + solutionRepresentation.get(i).getY() + ")";
+		}
+		System.out.println(route);
 	}
 }

@@ -92,10 +92,11 @@ public class Collector extends Agent {
 	public void moveToCalculationPhase() {
 		this.state = AgentState.CALCULATION_STATE;
 		this.currentSolution.finaliseCollection();
-		System.out.println("This shit bussin, respectfully");
+		System.out.println("Collection Finalised");
 	}
 	
 	public void moveToActionPhase() {
 		this.state = AgentState.ACTION_STATE;
 	}
+	
 }
