@@ -29,7 +29,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	ContinuousSpace<Object> space;
 	Grid<Object> grid;
 	
-	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance;
+	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance, geneticAlgorithmCutOffTick, populationSize;
 	boolean collectAllRubbish;
 	
 	@Override
@@ -43,12 +43,15 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		this.collectorSpeed = parameters.getInteger("collectorSpeed");
 		this.finishMapTick = parameters.getInteger("mapTerminationTick");
 		this.viewDistance = parameters.getInteger("viewDistance");
+		this.populationSize = parameters.getInteger("populationSize");
+		this.geneticAlgorithmCutOffTick = parameters.getInteger("geneticAlgorithmCutOffTick");
 		this.collectAllRubbish = parameters.getBoolean("collectAllRubbish");
 		
 	    ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 	    ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(finishMapTick);
 	    schedule.schedule(scheduleParams, this, "triggerMapEnd", context);
-		
+	    scheduleParams = ScheduleParameters.createOneTime(geneticAlgorithmCutOffTick);
+	    schedule.schedule(scheduleParams, this, "triggerMapEnd", context);
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
 		space = spaceFactory.createContinuousSpace("space", context, new RandomCartesianAdder<Object>(), new repast.simphony.space.continuous.WrapAroundBorders(), 50, 50);
@@ -62,7 +65,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		}
 		
 		for(int i = 0; i < collectorCount; i++) {
-			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish));
+			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize));
 		}
 		
 		

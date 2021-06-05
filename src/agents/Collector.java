@@ -27,11 +27,11 @@ public class Collector extends Agent {
 	private Solution currentSolution;
 	private GeneticAlgorithmState gaState;
 	
-	private int speed, viewDistance;
+	private int speed, viewDistance, populationSize;
 	private boolean removed, removeAllRubbishFlag;
 	
 	
-	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance, boolean removeAllRubbish) {
+	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance, boolean removeAllRubbish, int populationSize) {
 		this.space = space;
 		this.grid = grid;
 		this.speed = speed;
