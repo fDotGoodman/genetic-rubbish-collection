@@ -22,4 +22,9 @@ public class Rubbish {
 	public NdPoint getLocation() {
 		return space.getLocation(this);
 	}
+	
+	@Override 
+	public String toString() {
+		return ("(" + getLocation().getX() + ", " + getLocation().getY() + ")");
+	}
 }

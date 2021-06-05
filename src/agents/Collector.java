@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 import components.AgentState;
+import components.GeneticAlgorithmState;
 import components.Solution;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
@@ -24,17 +25,22 @@ public class Collector extends Agent {
 	private AgentState state;
 	private Random r;
 	private Solution currentSolution;
+	private GeneticAlgorithmState gaState;
 	
 	private int speed, viewDistance;
+	private boolean removed, removeAllRubbishFlag;
 	
 	
-	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance) {
+	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance, boolean removeAllRubbish) {
 		this.space = space;
 		this.grid = grid;
 		this.speed = speed;
 		this.state = AgentState.MAP_STATE;
 		this.viewDistance = viewDistance;
+		this.gaState = GeneticAlgorithmState.NOT_STARTED;
 		this.currentSolution = new Solution(this);
+		this.removeAllRubbishFlag = removeAllRubbish;
+		this.removed = false;
 		r = new Random();
 	}
 	
@@ -61,18 +67,60 @@ public class Collector extends Agent {
 				}
 				moveRandomly(space, grid, r, speed);
 				
-				
-				
 				break;
 			
 			case CALCULATION_STATE:
 				
-				break;
-			
-			case ACTION_STATE:
+				if(gaState == GeneticAlgorithmState.NOT_STARTED) {
+					
+				}
+				else if(gaState == GeneticAlgorithmState.INITIALISING) {
+					
+				}
+				else if(gaState == GeneticAlgorithmState.ONGOING) {
+					
+				}
+				else if(gaState == GeneticAlgorithmState.COMPLETE) {
+					finishGeneticAlgorithm();
+				}
 				
 				break;
 			
+			case ACTION_STATE:
+				if(!currentSolution.getSolutionRepresentation().isEmpty()) {
+					pt = grid.getLocation(this);
+					nghCreator = new GridCellNgh<Rubbish>(grid, pt, Rubbish.class, 1, 1);
+					gridCells = nghCreator.getNeighborhood(true);
+					//SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
+					System.out.println(gridCells.size());
+					int i = 0;
+					for(GridCell<Rubbish> cell : gridCells) {
+						System.out.println("Cell " + i + ": " + cell.size());
+						i++;
+						if(cell.size() > 0) {
+							System.out.println("Found rubbish");
+							removed = currentSolution.removePoint(cell.getPoint());
+							if(removeAllRubbishFlag == true || removed == true) {
+								for(Rubbish rub : cell.items()) {
+									rub.collect();
+								}
+							}
+						}
+					}
+					if(!removed && !currentSolution.getSolutionRepresentation().isEmpty()) {
+						moveByDistance(space, grid, currentSolution.getSolutionRepresentation().get(0), speed);
+					}
+					removed = false;
+				}
+				else {
+					System.out.println("Successfully collected all rubbish. Switching off...");
+					this.state = AgentState.DORMANT_STATE;
+				}				
+				
+				break;
+			case DORMANT_STATE:
+				
+				break;
 			default:
 				break;
 				
@@ -91,12 +139,47 @@ public class Collector extends Agent {
 	
 	public void moveToCalculationPhase() {
 		this.state = AgentState.CALCULATION_STATE;
+		this.gaState = GeneticAlgorithmState.INITIALISING;
 		this.currentSolution.finaliseCollection();
+		moveToActionPhase();
 		System.out.println("Collection Finalised");
 	}
 	
 	public void moveToActionPhase() {
 		this.state = AgentState.ACTION_STATE;
 	}
+	
+	public void startGeneticAlgorithm() {
+		System.out.println("Initialising Genetic Algorithm...");
+		this.gaState = GeneticAlgorithmState.ONGOING;
+		
+		/**
+		 * Generate intial population
+		 * Evaluate population
+		 */
+	}
+	
+	public void nextGeneticAlgorithmIteration() {
+		
+		
+		/*
+		 * 
+		 * reproduction (select parents)
+		 * recombination to produce offspring (crossover)
+		 * mutation of offspring (mutation)
+		 * local search (search)
+		 * calculate fitness (evaluate population)
+		 * 
+		 * if( stoppingCriteria met) {
+		 *     finishGeneticAlgorithm()
+		 * }
+		 */
+	}
+	
+	public void finishGeneticAlgorithm() {
+		this.state = AgentState.ACTION_STATE;
+	}
+	
+	
 	
 }

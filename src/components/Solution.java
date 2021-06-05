@@ -15,6 +15,7 @@ public class Solution {
 	public Solution(Collector hostAgent) {
 		this.solutionRepresentation = new ArrayList<GridPoint>();
 		this.host = hostAgent;
+		this.cost = 0;
 	}
 	
 	public Solution(Collector hostAgent, ArrayList<GridPoint> solRep) {
@@ -48,6 +49,17 @@ public class Solution {
 	public void addPoint(GridPoint newPoint) {
 		//System.out.println("Added rubbish at coordinates X=" + newPoint.getX() + ", Y=" + newPoint.getY());
 		solutionRepresentation.add(newPoint);
+	}
+	
+	public boolean removePoint(GridPoint point) {
+		if(solutionRepresentation.contains(point)) {
+			solutionRepresentation.remove(point);
+			
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	public double calculateCostInclusive() {
@@ -84,11 +96,19 @@ public class Solution {
 	}
 	
 	public void printRoute() {
-		String route = new String("Route Length: " + solutionRepresentation.size() + ", Route: ");
+		String route = new String("Cost: ");
+		if(cost == 0) {
+			route += " Not Yet Calculated, ";
+		}
+		else {
+			route += ("" + this.cost + ", ");
+		}
+		route += ("Route Length: " + solutionLength + ", Route: ");
 		route += "(" + solutionRepresentation.get(0).getX() + "," + solutionRepresentation.get(0).getY() + ")";
-		for(int i = 1; i < solutionRepresentation.size(); i++) {
+		for(int i = 1; i < solutionLength; i++) {
 			route+= " -> (" + solutionRepresentation.get(i).getX() + "," + solutionRepresentation.get(i).getY() + ")";
 		}
 		System.out.println(route);
 	}
+	
 }

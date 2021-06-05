@@ -34,7 +34,7 @@ public class Agent {
 			
 			space.moveByVector(this, 1, angle, 0);
 			currentPoint = space.getLocation(this);
-			grid.moveTo(this, (int)destinationPoint.getX(), (int)destinationPoint.getY());
+			grid.moveTo(this, (int)space.getLocation(this).getX(), (int)space.getLocation(this).getY());
 			
 		}
 	}

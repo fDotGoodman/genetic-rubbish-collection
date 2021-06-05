@@ -30,6 +30,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	Grid<Object> grid;
 	
 	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance;
+	boolean collectAllRubbish;
 	
 	@Override
 	public Context build(Context<Object> context) {
@@ -42,6 +43,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		this.collectorSpeed = parameters.getInteger("collectorSpeed");
 		this.finishMapTick = parameters.getInteger("mapTerminationTick");
 		this.viewDistance = parameters.getInteger("viewDistance");
+		this.collectAllRubbish = parameters.getBoolean("collectAllRubbish");
 		
 	    ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 	    ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(finishMapTick);
@@ -60,7 +62,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		}
 		
 		for(int i = 0; i < collectorCount; i++) {
-			context.add(new Collector(space, grid, collectorSpeed, viewDistance));
+			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish));
 		}
 		
 		
