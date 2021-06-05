@@ -91,14 +91,9 @@ public class Collector extends Agent {
 					pt = grid.getLocation(this);
 					nghCreator = new GridCellNgh<Rubbish>(grid, pt, Rubbish.class, 1, 1);
 					gridCells = nghCreator.getNeighborhood(true);
-					//SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
-					System.out.println(gridCells.size());
-					int i = 0;
+					SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
 					for(GridCell<Rubbish> cell : gridCells) {
-						System.out.println("Cell " + i + ": " + cell.size());
-						i++;
 						if(cell.size() > 0) {
-							System.out.println("Found rubbish");
 							removed = currentSolution.removePoint(cell.getPoint());
 							if(removeAllRubbishFlag == true || removed == true) {
 								for(Rubbish rub : cell.items()) {
