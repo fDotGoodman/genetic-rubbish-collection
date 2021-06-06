@@ -29,7 +29,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	ContinuousSpace<Object> space;
 	Grid<Object> grid;
 	
-	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance, geneticAlgorithmCutOffTick, populationSize;
+	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance, maxGeneticAlgorithmIterations, populationSize;
 	boolean collectAllRubbish;
 	
 	@Override
@@ -44,20 +44,18 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		this.finishMapTick = parameters.getInteger("mapTerminationTick");
 		this.viewDistance = parameters.getInteger("viewDistance");
 		this.populationSize = parameters.getInteger("populationSize");
-		this.geneticAlgorithmCutOffTick = parameters.getInteger("geneticAlgorithmCutOffTick");
+		this.maxGeneticAlgorithmIterations = parameters.getInteger("geneticAlgorithmCutOffTick");
 		this.collectAllRubbish = parameters.getBoolean("collectAllRubbish");
 		
 	    ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 	    ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(finishMapTick);
 	    schedule.schedule(scheduleParams, this, "triggerMapEnd", context);
-	    scheduleParams = ScheduleParameters.createOneTime(geneticAlgorithmCutOffTick);
-	    schedule.schedule(scheduleParams, this, "triggerCalculationEnd", context);
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-		space = spaceFactory.createContinuousSpace("space", context, new RandomCartesianAdder<Object>(), new repast.simphony.space.continuous.WrapAroundBorders(), 50, 50);
+		space = spaceFactory.createContinuousSpace("space", context, new RandomCartesianAdder<Object>(), new repast.simphony.space.continuous.WrapAroundBorders(), dimensions, dimensions);
 		
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
-		this.grid = gridFactory.createGrid("grid", context, new GridBuilderParameters<Object>(new WrapAroundBorders(), new SimpleGridAdder<Object>(), true, 50, 50));
+		this.grid = gridFactory.createGrid("grid", context, new GridBuilderParameters<Object>(new WrapAroundBorders(), new SimpleGridAdder<Object>(), true, dimensions, dimensions));
 		
 		
 		for(int i = 0; i < rubbishCount; i++) {
@@ -65,7 +63,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		}
 		
 		for(int i = 0; i < collectorCount; i++) {
-			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize));
+			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize, maxGeneticAlgorithmIterations));
 		}
 		
 		
@@ -84,11 +82,4 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		
 	}
 	
-	public void triggerCalculationEnd(Context context) {
-		Stream<Collector> collectorStream = context.getObjectsAsStream(Collector.class);
-		List<Collector> collectorList = collectorStream.collect(Collectors.toList());
-		collectorList.forEach((collector) -> collector.finishGeneticAlgorithm());
-		
-	}
-
 }

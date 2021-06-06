@@ -15,6 +15,7 @@ import java.util.Random;
 import components.AgentState;
 import components.GeneticAlgorithmState;
 import components.Solution;
+import heuristics.RandomReinsertion;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
@@ -30,13 +31,15 @@ public class Collector extends Agent {
 	private GeneticAlgorithmState gaState;
 	private ArrayList<Solution> population;
 	
+	private RandomReinsertion mutationHeuristic;
 	
-	private int speed, viewDistance, populationSize;
+	
+	private int speed, viewDistance, populationSize, currentIteration, maxIterations;
 	private boolean removed, removeAllRubbishFlag;
 	
 	
 	
-	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance, boolean removeAllRubbish, int populationSize) {
+	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance, boolean removeAllRubbish, int populationSize, int maxIterations) {
 		this.space = space;
 		this.grid = grid;
 		this.speed = speed;
@@ -46,6 +49,8 @@ public class Collector extends Agent {
 		this.currentSolution = new Solution(this);
 		this.removeAllRubbishFlag = removeAllRubbish;
 		this.removed = false;
+		this.currentIteration = 0;
+		this.maxIterations = maxIterations;
 		r = new Random();
 	}
 	
@@ -80,9 +85,16 @@ public class Collector extends Agent {
 					
 				}
 				else if(gaState == GeneticAlgorithmState.INITIALISING) {
-					
+					startGeneticAlgorithm();
 				}
 				else if(gaState == GeneticAlgorithmState.ONGOING) {
+					if(currentIteration < maxIterations) {
+						nextGeneticAlgorithmIteration();
+					}
+					else {
+						gaState = GeneticAlgorithmState.COMPLETE;
+					}
+					currentIteration++;
 					
 				}
 				else if(gaState == GeneticAlgorithmState.COMPLETE) {
@@ -141,8 +153,7 @@ public class Collector extends Agent {
 		this.state = AgentState.CALCULATION_STATE;
 		this.gaState = GeneticAlgorithmState.INITIALISING;
 		this.currentSolution.finaliseCollection();
-		moveToActionPhase();
-		System.out.println("Collection Finalised");
+		System.out.println("Moving to Calculation State...");
 	}
 	
 	public void moveToActionPhase() {
@@ -160,6 +171,8 @@ public class Collector extends Agent {
 			population.add(tmp);
 			tmp.printRoute();
 		}
+		
+		this.mutationHeuristic = new RandomReinsertion();
 		this.gaState = GeneticAlgorithmState.ONGOING;
 		
 		/**
@@ -170,6 +183,11 @@ public class Collector extends Agent {
 	
 	public void nextGeneticAlgorithmIteration() {
 		
+		Solution tmp = currentSolution.deepClone();
+		if(mutationHeuristic.applyHeuristic(tmp, 1, 1) < currentSolution.getCost()) {
+			currentSolution = tmp;
+			currentSolution.printRoute();
+		}
 		
 		/*
 		 * 
