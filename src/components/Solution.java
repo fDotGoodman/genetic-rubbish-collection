@@ -30,6 +30,8 @@ public class Solution {
 	
 	public void setSolutionRepresentation(ArrayList<GridPoint> solutionRepresentation) {
 		this.solutionRepresentation = solutionRepresentation;
+		this.solutionLength = solutionRepresentation.size();
+		this.cost = calculateCostInclusive();
 	}
 	
 	public void finaliseCollection() {

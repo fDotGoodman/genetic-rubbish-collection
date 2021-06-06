@@ -7,6 +7,8 @@ import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.SimUtilities;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -26,9 +28,12 @@ public class Collector extends Agent {
 	private Random r;
 	private Solution currentSolution;
 	private GeneticAlgorithmState gaState;
+	private ArrayList<Solution> population;
+	
 	
 	private int speed, viewDistance, populationSize;
 	private boolean removed, removeAllRubbishFlag;
+	
 	
 	
 	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance, boolean removeAllRubbish, int populationSize) {
@@ -146,6 +151,15 @@ public class Collector extends Agent {
 	
 	public void startGeneticAlgorithm() {
 		System.out.println("Initialising Genetic Algorithm...");
+		population = new ArrayList<Solution>();
+		for(int i = 0; i < populationSize; i++) {
+			Solution tmp = currentSolution.deepClone();
+			ArrayList<GridPoint> newRepresentation = tmp.getSolutionRepresentation();
+			Collections.shuffle(newRepresentation);
+			tmp.setSolutionRepresentation(newRepresentation);
+			population.add(tmp);
+			tmp.printRoute();
+		}
 		this.gaState = GeneticAlgorithmState.ONGOING;
 		
 		/**

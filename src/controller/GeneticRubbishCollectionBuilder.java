@@ -51,7 +51,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	    ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(finishMapTick);
 	    schedule.schedule(scheduleParams, this, "triggerMapEnd", context);
 	    scheduleParams = ScheduleParameters.createOneTime(geneticAlgorithmCutOffTick);
-	    schedule.schedule(scheduleParams, this, "triggerMapEnd", context);
+	    schedule.schedule(scheduleParams, this, "triggerCalculationEnd", context);
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
 		space = spaceFactory.createContinuousSpace("space", context, new RandomCartesianAdder<Object>(), new repast.simphony.space.continuous.WrapAroundBorders(), 50, 50);
@@ -81,6 +81,13 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		Stream<Collector> collectorStream = context.getObjectsAsStream(Collector.class);
 		List<Collector> collectorList = collectorStream.collect(Collectors.toList());
 		collectorList.forEach((collector) -> collector.moveToCalculationPhase());
+		
+	}
+	
+	public void triggerCalculationEnd(Context context) {
+		Stream<Collector> collectorStream = context.getObjectsAsStream(Collector.class);
+		List<Collector> collectorList = collectorStream.collect(Collectors.toList());
+		collectorList.forEach((collector) -> collector.finishGeneticAlgorithm());
 		
 	}
 
