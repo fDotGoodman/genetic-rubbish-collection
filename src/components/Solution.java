@@ -47,6 +47,10 @@ public class Solution {
 		return this.cost;
 	}
 	
+	public Collector getHost() {
+		return this.host;
+	}
+	
 	public void addPoint(GridPoint newPoint) {
 		//System.out.println("Added rubbish at coordinates X=" + newPoint.getX() + ", Y=" + newPoint.getY());
 		solutionRepresentation.add(newPoint);
