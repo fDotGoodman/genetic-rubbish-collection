@@ -50,6 +50,7 @@ public class Collector extends Agent {
 		this.removeAllRubbishFlag = removeAllRubbish;
 		this.removed = false;
 		this.currentIteration = 0;
+		this.populationSize = populationSize;
 		this.maxIterations = maxIterations;
 		r = new Random();
 	}
@@ -161,7 +162,7 @@ public class Collector extends Agent {
 	}
 	
 	public void startGeneticAlgorithm() {
-		System.out.println("Initialising Genetic Algorithm...");
+		System.out.println("Initialising Genetic Algorithm..." + populationSize);
 		population = new ArrayList<Solution>();
 		for(int i = 0; i < populationSize; i++) {
 			Solution tmp = currentSolution.deepClone();
@@ -182,12 +183,14 @@ public class Collector extends Agent {
 	}
 	
 	public void nextGeneticAlgorithmIteration() {
-		
+		rouletteWheelSelection();
+		/*
 		Solution tmp = currentSolution.deepClone();
 		if(mutationHeuristic.applyHeuristic(tmp, 1, 1) < currentSolution.getCost()) {
 			currentSolution = tmp;
 			currentSolution.printRoute();
 		}
+		*/
 		
 		/*
 		 * 
@@ -207,6 +210,46 @@ public class Collector extends Agent {
 		this.state = AgentState.ACTION_STATE;
 	}
 	
+	public Solution[] rouletteWheelSelection() {
+		Solution[] parents = new Solution[2];
+		Random r = new Random();
+		double totalFitness = 0;
+		double likelihood = 0;
+		double spin;
+		int parent1, parent2;
+		parent1 = parent2 = 0;
+		for(Solution individual : population) {
+			totalFitness += individual.getCost();
+		}
+		
+		while(parent1 == 0) {
+			for(int i = 0; i < population.size(); i++) {
+				spin = r.nextDouble();
+				double candidateCost = population.get(i).getCost();
+				likelihood = (candidateCost / totalFitness);
+				if(spin < likelihood) {
+					parent1 = i;
+					parent2 = i;
+				}
+			}
+		}
 	
+		while(parent1 == parent2) {
+			for(int j = 0; j < population.size(); j++) {
+				spin = r.nextDouble();
+				double candidateCost = population.get(j).getCost();
+				likelihood = (candidateCost / totalFitness);
+				if(spin < likelihood) {
+					parent2 = j;
+				}
+				//System.out.println("P1: " + parent1 + ", P2: " + j);
+				//System.out.println("Current state: " + counter + ", Iteration: " + j);
+			}
+		}
+		System.out.println("Finished selection of parent 2. P1=" + parent1 + ", P2=" + parent2);
+		parents[0] = population.get(parent1);
+		parents[1] = population.get(parent2);
+		return parents;
+	}
 	
 }

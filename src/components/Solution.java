@@ -36,8 +36,7 @@ public class Solution {
 	
 	public void finaliseCollection() {
 		solutionLength = solutionRepresentation.size();
-		this.cost = calculateCostInclusive();
-		printRoute();
+		this.cost = calculateCostInclusive(); 
 	}
 	
 	public void setCost(double cost) {
