@@ -33,13 +33,21 @@ public class Collector extends Agent {
 	
 	private RandomReinsertion mutationHeuristic;
 	
-	
-	private int speed, viewDistance, populationSize, currentIteration, maxIterations;
+	private double generationalGap;
+	private int speed, viewDistance, populationSize, currentIteration, maxIterations, numberOfOffspring;
 	private boolean removed, removeAllRubbishFlag;
 	
 	
 	
-	public Collector(ContinuousSpace<Object> space, Grid<Object> grid, int speed, int viewDistance, boolean removeAllRubbish, int populationSize, int maxIterations) {
+	public Collector(ContinuousSpace<Object> space, 
+			Grid<Object> grid, 
+			int speed, int viewDistance, 
+			boolean removeAllRubbish, 
+			int populationSize, 
+			int maxIterations,
+			double generationalGap
+			) {
+		
 		this.space = space;
 		this.grid = grid;
 		this.speed = speed;
@@ -52,6 +60,7 @@ public class Collector extends Agent {
 		this.currentIteration = 0;
 		this.populationSize = populationSize;
 		this.maxIterations = maxIterations;
+		this.generationalGap = generationalGap;
 		r = new Random();
 	}
 	
@@ -140,15 +149,6 @@ public class Collector extends Agent {
 		}
 	}
 	
-	public void moveTowards(GridPoint pt) {
-		if(!pt.equals(grid.getLocation(this))) {
-			NdPoint myPoint = space.getLocation(this);
-			NdPoint otherPoint = new NdPoint(pt.getX(), pt.getY());
-			double angle = SpatialMath.calcAngleFor2DMovement(space, myPoint, otherPoint);
-			space.moveByVector(this, speed, angle, 0);
-			grid.moveTo(this, (int) myPoint.getX(), (int) myPoint.getY());
-		}
-	}
 	
 	public void moveToCalculationPhase() {
 		this.state = AgentState.CALCULATION_STATE;
@@ -170,11 +170,12 @@ public class Collector extends Agent {
 			Collections.shuffle(newRepresentation);
 			tmp.setSolutionRepresentation(newRepresentation);
 			population.add(tmp);
-			tmp.printRoute();
 		}
 		
 		this.mutationHeuristic = new RandomReinsertion();
 		this.gaState = GeneticAlgorithmState.ONGOING;
+		
+		numberOfOffspring = (int) Math.floor(population.size() * generationalGap);
 		
 		/**
 		 * Generate intial population
@@ -183,7 +184,11 @@ public class Collector extends Agent {
 	}
 	
 	public void nextGeneticAlgorithmIteration() {
-		rouletteWheelSelection();
+		
+		ArrayList<Solution> offspring = new ArrayList<Solution>();
+		Solution[] parents = rouletteWheelSelection();
+		
+		
 		/*
 		Solution tmp = currentSolution.deepClone();
 		if(mutationHeuristic.applyHeuristic(tmp, 1, 1) < currentSolution.getCost()) {
@@ -195,11 +200,11 @@ public class Collector extends Agent {
 		/*
 		 * 
 		 * reproduction (select parents)
-		 * recombination to produce offspring (crossover)
-		 * mutation of offspring (mutation)
+		 * recombination to produce offspring (crossover)			
+		 * mutation of offspring (mutation)						DONE
 		 * local search (search)
 		 * calculate fitness (evaluate population)
-		 * 
+		 * replacement
 		 * if( stoppingCriteria met) {
 		 *     finishGeneticAlgorithm()
 		 * }
@@ -242,8 +247,6 @@ public class Collector extends Agent {
 				if(spin < likelihood) {
 					parent2 = j;
 				}
-				//System.out.println("P1: " + parent1 + ", P2: " + j);
-				//System.out.println("Current state: " + counter + ", Iteration: " + j);
 			}
 		}
 		System.out.println("Finished selection of parent 2. P1=" + parent1 + ", P2=" + parent2);
