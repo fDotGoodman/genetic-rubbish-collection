@@ -15,6 +15,7 @@ import java.util.Random;
 import components.AgentState;
 import components.GeneticAlgorithmState;
 import components.Solution;
+import heuristics.PartiallyMappedCrossover;
 import heuristics.RandomReinsertion;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
@@ -30,8 +31,10 @@ public class Collector extends Agent {
 	private Solution currentSolution;
 	private GeneticAlgorithmState gaState;
 	private ArrayList<Solution> population;
+	private ArrayList<Solution> offspring;
 	
 	private RandomReinsertion mutationHeuristic;
+	private PartiallyMappedCrossover crossoverHeuristic;
 	
 	private double generationalGap;
 	private int speed, viewDistance, populationSize, currentIteration, maxIterations, numberOfOffspring;
@@ -173,6 +176,7 @@ public class Collector extends Agent {
 		}
 		
 		this.mutationHeuristic = new RandomReinsertion();
+		this.crossoverHeuristic = new PartiallyMappedCrossover();
 		this.gaState = GeneticAlgorithmState.ONGOING;
 		
 		numberOfOffspring = (int) Math.floor(population.size() * generationalGap);
@@ -185,8 +189,12 @@ public class Collector extends Agent {
 	
 	public void nextGeneticAlgorithmIteration() {
 		
-		ArrayList<Solution> offspring = new ArrayList<Solution>();
-		Solution[] parents = rouletteWheelSelection();
+		offspring = new ArrayList<Solution>();
+		Solution[] parents;
+		for(int i = 0; i < numberOfOffspring; i++) {
+			parents = rouletteWheelSelection();
+			offspring.add(crossoverHeuristic.applyHeuristic(parents[0], parents[1], 1, 1));
+		}
 		
 		
 		/*
@@ -199,16 +207,26 @@ public class Collector extends Agent {
 		
 		/*
 		 * 
-		 * reproduction (select parents)
-		 * recombination to produce offspring (crossover)			
+		 * selection (select parents)							DONE
+		 * reproduction (crossover)								DONE
 		 * mutation of offspring (mutation)						DONE
-		 * local search (search)
-		 * calculate fitness (evaluate population)
-		 * replacement
+		 * local search (search)						
+		 * calculate fitness (evaluate population)				DONE
+		 * replacement											DONE
 		 * if( stoppingCriteria met) {
 		 *     finishGeneticAlgorithm()
 		 * }
 		 */
+		for(int i = 0; i < numberOfOffspring; i++) {
+			int worstIndex = 0;
+			for(int j = 1; j < this.populationSize; j++) {
+				if(population.get(j).getCost() > population.get(worstIndex).getCost()) {
+					worstIndex = j;
+				}
+			}
+			population.remove(worstIndex);
+		}
+		population.addAll(offspring);
 	}
 	
 	public void finishGeneticAlgorithm() {
@@ -249,7 +267,6 @@ public class Collector extends Agent {
 				}
 			}
 		}
-		System.out.println("Finished selection of parent 2. P1=" + parent1 + ", P2=" + parent2);
 		parents[0] = population.get(parent1);
 		parents[1] = population.get(parent2);
 		return parents;
