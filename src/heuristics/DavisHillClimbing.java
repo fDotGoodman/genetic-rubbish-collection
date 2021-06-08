@@ -11,27 +11,28 @@ public class DavisHillClimbing implements Heuristic {
 		AdjacentSwap mutationHeuristic = new AdjacentSwap();
 		int counter = 0;
 		Solution bestCandidate = currentSolution;
-		Solution currentCandidate;
-		double bestFitness, currentFitness;
+		Solution candidate;
+		double bestFitness, candidateFitness;
 		bestFitness = currentSolution.getCost();
 		bestCandidate = currentSolution.deepClone();
 		while(counter < Math.floor(dos * 10)) {
 			
 			for(int i = 0; i < currentSolution.getSolutionLength(); i++) {
-				currentCandidate = bestCandidate.deepClone();
-				currentFitness = mutationHeuristic.applyHeuristic(currentCandidate, i);
-				if(currentFitness < bestFitness) {
-					bestCandidate = currentCandidate.deepClone();
+				candidate = bestCandidate.deepClone();
+				candidateFitness = mutationHeuristic.applyHeuristic(candidate, i);
+				System.out.println("Iteration: " + i + " - candidate fitness=" + candidateFitness + ", current best=" + bestFitness);
+				if(candidateFitness < bestFitness) {
+					bestCandidate = candidate.deepClone();
 					bestFitness = bestCandidate.getCost();
 				}
 				
 			}
 			
 			// Handles swapping the last city with the first city
-			currentCandidate = bestCandidate.deepClone();
-			currentFitness = mutationHeuristic.applyHeuristic(currentCandidate, currentSolution.getSolutionLength());
-			if(currentFitness < bestFitness) {
-				bestCandidate = currentCandidate.deepClone();
+			candidate = bestCandidate.deepClone();
+			candidateFitness = mutationHeuristic.applyHeuristic(candidate, currentSolution.getSolutionLength() - 1);
+			if(candidateFitness < bestFitness) {
+				bestCandidate = candidate.deepClone();
 				bestFitness = bestCandidate.getCost();
 			}
 			

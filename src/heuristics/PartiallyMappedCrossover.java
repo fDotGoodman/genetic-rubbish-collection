@@ -33,7 +33,6 @@ public class PartiallyMappedCrossover implements CrossoverHeuristic {
 		while(index2 == index1) {
 			index2 = r.nextInt(tourLength);
 		}
-		System.out.println("X1:" + index1 + ", X2:" + index2);
 		
 		// Step 1
 		for(int i = smaller(index1, index2); i < larger(index1, index2); i++) {
@@ -92,12 +91,7 @@ public class PartiallyMappedCrossover implements CrossoverHeuristic {
 				child1Tour[i] = parent1Tour[i];
 			}
 		}
-		
 
-		System.out.println("P1= " + Arrays.toString(parent1Tour));
-		System.out.println("P2= " + Arrays.toString(parent2Tour));
-		System.out.println("C1= " + Arrays.toString(child1Tour));
-		System.out.println("C2= " + Arrays.toString(child2Tour));
 		
 		double c = r.nextDouble();
 		GridPoint[] childTourArray = (c < 0.5) ? child1Tour : child2Tour;

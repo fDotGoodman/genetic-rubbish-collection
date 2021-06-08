@@ -16,10 +16,10 @@ public class AdjacentSwap implements SwapHeuristic {
 		int index2;
 		if(index1 < 0 || index1 >= solutionRepresentation.size()) {
 			Random r = new Random();
-			index1 = r.nextInt(solutionRepresentation.size() + 1);
+			index1 = r.nextInt(solutionRepresentation.size());
 			System.out.println("Invalid city locations for AdjacentSwap... Randomly picking city locations.");
 		}
-		if(index1 == solutionRepresentation.size() + 1) {
+		if(index1 >= solutionRepresentation.size() - 1) {
 			index2 = 0;
 		} 
 		else {
