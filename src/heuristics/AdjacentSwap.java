@@ -1,6 +1,7 @@
 package heuristics;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import components.Solution;
@@ -25,10 +26,7 @@ public class AdjacentSwap implements SwapHeuristic {
 		else {
 			index2 = index1 + 1;
 		}
-		
-		GridPoint tmp = solutionRepresentation.get(index1);
-		solutionRepresentation.set(index1, solutionRepresentation.get(index2));
-		solutionRepresentation.set(index2, tmp);
+		Collections.swap(solutionRepresentation, index1, index2);
 		
 		currentSolution.setSolutionRepresentation(solutionRepresentation);
 		currentSolution.calculateCostInclusive();

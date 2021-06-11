@@ -35,6 +35,7 @@ public class Solution {
 	}
 	
 	public void finaliseCollection() {
+		containsDuplicates("Caller=finaliseCollection() in Solution.java");
 		solutionLength = solutionRepresentation.size();
 		this.cost = calculateCostInclusive(); 
 	}
@@ -54,6 +55,10 @@ public class Solution {
 	public void addPoint(GridPoint newPoint) {
 		//System.out.println("Added rubbish at coordinates X=" + newPoint.getX() + ", Y=" + newPoint.getY());
 		solutionRepresentation.add(newPoint);
+	}
+	
+	public int getSolutionLength() {
+		return this.solutionLength;
 	}
 	
 	public boolean removePoint(GridPoint point) {
@@ -114,6 +119,14 @@ public class Solution {
 			route+= " -> (" + solutionRepresentation.get(i).getX() + "," + solutionRepresentation.get(i).getY() + ")";
 		}
 		System.out.println(route);
+	}
+	
+	public void containsDuplicates(String debugString) {
+		for(int i = 0; i < this.solutionLength; i++) {
+			if(this.getSolutionRepresentation().lastIndexOf(this.getSolutionRepresentation().get(i)) != i && this.getSolutionRepresentation().lastIndexOf(this.getSolutionRepresentation().get(i)) != -1) {
+				System.out.println("[WARNING] - solution contains duplicates. DS: " + debugString);
+			}
+		}
 	}
 	
 }

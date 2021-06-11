@@ -20,12 +20,10 @@ public class DavisHillClimbing implements Heuristic {
 			for(int i = 0; i < currentSolution.getSolutionLength(); i++) {
 				candidate = bestCandidate.deepClone();
 				candidateFitness = mutationHeuristic.applyHeuristic(candidate, i);
-				System.out.println("Iteration: " + i + " - candidate fitness=" + candidateFitness + ", current best=" + bestFitness);
 				if(candidateFitness < bestFitness) {
 					bestCandidate = candidate.deepClone();
 					bestFitness = bestCandidate.getCost();
 				}
-				
 			}
 			
 			// Handles swapping the last city with the first city
@@ -35,7 +33,6 @@ public class DavisHillClimbing implements Heuristic {
 				bestCandidate = candidate.deepClone();
 				bestFitness = bestCandidate.getCost();
 			}
-			
 			counter++;
 		}
 

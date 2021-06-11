@@ -15,7 +15,8 @@ public class RandomReinsertion implements Heuristic {
 		ArrayList<GridPoint> solutionRepresentation = currentSolution.getSolutionRepresentation();
 		Random r = new Random();
 		int cityIndex, reinsertionIndex;
-		cityIndex = reinsertionIndex = r.nextInt(solutionRepresentation.size() - 1);
+		cityIndex = r.nextInt(solutionRepresentation.size() - 1);
+		reinsertionIndex = cityIndex;
 		
 		while(cityIndex == reinsertionIndex) {
 			reinsertionIndex = r.nextInt(solutionRepresentation.size() - 1);
@@ -23,9 +24,9 @@ public class RandomReinsertion implements Heuristic {
 				
 		GridPoint tmp = solutionRepresentation.remove(cityIndex);
 		solutionRepresentation.add(reinsertionIndex, tmp);
-		
 		currentSolution.setSolutionRepresentation(solutionRepresentation);
 		currentSolution.calculateCostInclusive();
+
 		return currentSolution.getCost();
 	}
 

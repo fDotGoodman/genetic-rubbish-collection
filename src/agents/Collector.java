@@ -15,7 +15,9 @@ import java.util.Random;
 import components.AgentState;
 import components.GeneticAlgorithmState;
 import components.Solution;
-import heuristics.PartiallyMappedCrossover;
+import heuristics.AdjacentSwap;
+import heuristics.DavisHillClimbing;
+import heuristics.OrderedCrossover;
 import heuristics.RandomReinsertion;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
@@ -34,7 +36,8 @@ public class Collector extends Agent {
 	private ArrayList<Solution> offspring;
 	
 	private RandomReinsertion mutationHeuristic;
-	private PartiallyMappedCrossover crossoverHeuristic;
+	private OrderedCrossover crossoverHeuristic;
+	private DavisHillClimbing hillClimbingHeuristic;
 	
 	private double generationalGap;
 	private int speed, viewDistance, populationSize, currentIteration, maxIterations, numberOfOffspring;
@@ -165,7 +168,8 @@ public class Collector extends Agent {
 	}
 	
 	public void startGeneticAlgorithm() {
-		System.out.println("Initialising Genetic Algorithm..." + populationSize);
+		System.out.println("Initialising Genetic Algorithm...");
+		currentSolution.printRoute();
 		population = new ArrayList<Solution>();
 		for(int i = 0; i < populationSize; i++) {
 			Solution tmp = currentSolution.deepClone();
@@ -176,7 +180,8 @@ public class Collector extends Agent {
 		}
 		
 		this.mutationHeuristic = new RandomReinsertion();
-		this.crossoverHeuristic = new PartiallyMappedCrossover();
+		this.crossoverHeuristic = new OrderedCrossover();
+		this.hillClimbingHeuristic = new DavisHillClimbing();
 		this.gaState = GeneticAlgorithmState.ONGOING;
 		
 		numberOfOffspring = (int) Math.floor(population.size() * generationalGap);
@@ -188,35 +193,18 @@ public class Collector extends Agent {
 	}
 	
 	public void nextGeneticAlgorithmIteration() {
-		
+		System.out.println("Epoch: " + this.currentIteration);
 		offspring = new ArrayList<Solution>();
 		Solution[] parents;
 		for(int i = 0; i < numberOfOffspring; i++) {
 			parents = rouletteWheelSelection();
-			offspring.add(crossoverHeuristic.applyHeuristic(parents[0], parents[1], 1, 1));
+			Solution candidateOffspring = crossoverHeuristic.applyHeuristic(parents[0], parents[1], 1, 1);
+	
+			mutationHeuristic.applyHeuristic(candidateOffspring, 1, 1);
+			hillClimbingHeuristic.applyHeuristic(candidateOffspring, 1, 1);
+			offspring.add(candidateOffspring);
 		}
 		
-		
-		/*
-		Solution tmp = currentSolution.deepClone();
-		if(mutationHeuristic.applyHeuristic(tmp, 1, 1) < currentSolution.getCost()) {
-			currentSolution = tmp;
-			currentSolution.printRoute();
-		}
-		*/
-		
-		/*
-		 * 
-		 * selection (select parents)							DONE
-		 * reproduction (crossover)								DONE
-		 * mutation of offspring (mutation)						DONE
-		 * local search (search)						
-		 * calculate fitness (evaluate population)				DONE
-		 * replacement											DONE
-		 * if( stoppingCriteria met) {
-		 *     finishGeneticAlgorithm()
-		 * }
-		 */
 		for(int i = 0; i < numberOfOffspring; i++) {
 			int worstIndex = 0;
 			for(int j = 1; j < this.populationSize; j++) {
@@ -227,9 +215,22 @@ public class Collector extends Agent {
 			population.remove(worstIndex);
 		}
 		population.addAll(offspring);
+		
 	}
 	
 	public void finishGeneticAlgorithm() {
+		Solution bestSolution = population.get(0);
+		double bestFitness = population.get(0).getCost();
+		for(int i = 1; i < population.size(); i++) {
+			if(population.get(i).getCost() < bestFitness) {
+				bestSolution = population.get(i);
+				bestFitness = population.get(i).getCost();
+			}
+		}
+		
+		this.currentSolution = bestSolution;
+		currentSolution.printRoute();
+		System.out.println("Genetic Algorithm Complete!");
 		this.state = AgentState.ACTION_STATE;
 	}
 	
@@ -240,30 +241,31 @@ public class Collector extends Agent {
 		double likelihood = 0;
 		double spin;
 		int parent1, parent2;
-		parent1 = parent2 = 0;
+		parent1 = 0;
+		parent2 = 0;
 		for(Solution individual : population) {
 			totalFitness += individual.getCost();
 		}
 		
 		while(parent1 == 0) {
-			for(int i = 0; i < population.size(); i++) {
+			for(int p1counter = 0; p1counter < population.size(); p1counter++) {
 				spin = r.nextDouble();
-				double candidateCost = population.get(i).getCost();
+				double candidateCost = population.get(p1counter).getCost();
 				likelihood = (candidateCost / totalFitness);
 				if(spin < likelihood) {
-					parent1 = i;
-					parent2 = i;
+					parent1 = p1counter;
+					parent2 = p1counter;
 				}
 			}
 		}
 	
 		while(parent1 == parent2) {
-			for(int j = 0; j < population.size(); j++) {
+			for(int p2counter = 0; p2counter < population.size(); p2counter++) {
 				spin = r.nextDouble();
-				double candidateCost = population.get(j).getCost();
+				double candidateCost = population.get(p2counter).getCost();
 				likelihood = (candidateCost / totalFitness);
 				if(spin < likelihood) {
-					parent2 = j;
+					parent2 = p2counter;
 				}
 			}
 		}

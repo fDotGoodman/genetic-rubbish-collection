@@ -17,7 +17,7 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
 				<parameter name="mapTerminationTick" displayName="MAP_PHASE End Tick" type="int" 
-						defaultValue="1000" 
+						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
