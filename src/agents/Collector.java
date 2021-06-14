@@ -130,12 +130,10 @@ public class Collector extends Agent {
 					gridCells = nghCreator.getNeighborhood(true);
 					SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
 					for(GridCell<Rubbish> cell : gridCells) {
-						if(cell.size() > 0) {
-							removed = currentSolution.removePoint(cell.getPoint());
-							if(removeAllRubbishFlag == true || removed == true) {
-								for(Rubbish rub : cell.items()) {
-									rub.collect();
-								}
+						removed = currentSolution.removePoint(cell.getPoint());
+						if(removeAllRubbishFlag == true || removed == true) {
+							for(Rubbish rub : cell.items()) {
+								rub.collect();
 							}
 						}
 					}
@@ -189,11 +187,6 @@ public class Collector extends Agent {
 		this.gaState = GeneticAlgorithmState.ONGOING;
 		
 		numberOfOffspring = (int) Math.floor(population.size() * generationalGap);
-		
-		/**
-		 * Generate intial population
-		 * Evaluate population
-		 */
 	}
 	
 	public void nextGeneticAlgorithmIteration() {
