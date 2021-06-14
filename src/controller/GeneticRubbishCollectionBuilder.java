@@ -29,7 +29,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	ContinuousSpace<Object> space;
 	Grid<Object> grid;
 	double generationalGap;
-	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance, maxGeneticAlgorithmIterations, populationSize;
+	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance, maxGeneticAlgorithmIterations, populationSize, dos, iom;
 	boolean collectAllRubbish;
 	
 	@Override
@@ -47,6 +47,9 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		this.maxGeneticAlgorithmIterations = parameters.getInteger("geneticAlgorithmCutOffTick");
 		this.collectAllRubbish = parameters.getBoolean("collectAllRubbish");
 		this.generationalGap = parameters.getDouble("generationalGap");
+		this.dos = translateGAMultiplierParameter(parameters.getString("depthOfSearch"));
+		this.iom = translateGAMultiplierParameter(parameters.getString("intensityOfMutation"));
+
 		
 	    ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 	    ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(finishMapTick);
@@ -64,7 +67,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		}
 		
 		for(int i = 0; i < collectorCount; i++) {
-			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize, maxGeneticAlgorithmIterations, generationalGap));
+			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize, maxGeneticAlgorithmIterations, generationalGap, dos, iom));
 		}
 		
 		
@@ -82,5 +85,22 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		collectorList.forEach((collector) -> collector.moveToCalculationPhase());
 		
 	}
+	
+	public int translateGAMultiplierParameter(String dosString) {
+		if(dosString == "2x") {
+			return 2;
+		}
+		else if(dosString == "4x") {
+			return 4;
+		}
+		else if(dosString == "8x") {
+			return 8;
+		}
+		else if(dosString == "10x") {
+			return 10;
+		}
+		return 1;
+	}
+	
 	
 }

@@ -40,7 +40,7 @@ public class Collector extends Agent {
 	private DavisHillClimbing hillClimbingHeuristic;
 	
 	private double generationalGap;
-	private int speed, viewDistance, populationSize, currentIteration, maxIterations, numberOfOffspring;
+	private int speed, viewDistance, populationSize, currentIteration, maxIterations, numberOfOffspring, dos, iom;
 	private boolean removed, removeAllRubbishFlag;
 	
 	
@@ -51,7 +51,9 @@ public class Collector extends Agent {
 			boolean removeAllRubbish, 
 			int populationSize, 
 			int maxIterations,
-			double generationalGap
+			double generationalGap,
+			int dos,
+			int iom
 			) {
 		
 		this.space = space;
@@ -67,6 +69,8 @@ public class Collector extends Agent {
 		this.populationSize = populationSize;
 		this.maxIterations = maxIterations;
 		this.generationalGap = generationalGap;
+		this.dos = dos;
+		this.iom = iom;
 		r = new Random();
 	}
 	
@@ -198,10 +202,10 @@ public class Collector extends Agent {
 		Solution[] parents;
 		for(int i = 0; i < numberOfOffspring; i++) {
 			parents = rouletteWheelSelection();
-			Solution candidateOffspring = crossoverHeuristic.applyHeuristic(parents[0], parents[1], 1, 1);
+			Solution candidateOffspring = crossoverHeuristic.applyHeuristic(parents[0], parents[1], dos, iom);
 	
-			mutationHeuristic.applyHeuristic(candidateOffspring, 1, 1);
-			hillClimbingHeuristic.applyHeuristic(candidateOffspring, 1, 1);
+			mutationHeuristic.applyHeuristic(candidateOffspring, dos, iom);
+			hillClimbingHeuristic.applyHeuristic(candidateOffspring, dos, iom);
 			offspring.add(candidateOffspring);
 		}
 		
