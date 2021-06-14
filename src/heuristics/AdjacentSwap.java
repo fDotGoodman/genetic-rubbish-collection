@@ -7,9 +7,19 @@ import java.util.Random;
 import components.Solution;
 import repast.simphony.space.grid.GridPoint;
 
+/**
+ * The AdjacentSwap Heuristic
+ * @author Felix
+ *
+ */
 public class AdjacentSwap implements SwapHeuristic {
 
 	@Override
+	/**
+	 *  @param currentSolution The solution to apply the swap to
+	 *  @param The index to perform the city swap to
+	 *  @return The fitness of the solution
+	 */
 	public double applyHeuristic(Solution currentSolution, int index1) {
 		// TODO Auto-generated method stub
 		

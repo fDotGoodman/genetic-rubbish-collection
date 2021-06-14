@@ -2,9 +2,21 @@ package heuristics;
 
 import components.Solution;
 
+/**
+ * Class to implement the Davis' Hill Climbing algorithm
+ * @author Felix
+ *
+ */
 public class DavisHillClimbing implements Heuristic {
 
 	@Override
+	/**
+	 * applyHeuristic method to perform hill climbing on the currentSolution to search the local solution space for fitter solutions
+	 * @param currentSolution The solution to hill climb on
+	 * @param dos The Depth of Search parameter
+	 * @param iom The Intensity of Mutation parameter
+	 * @return The fitness of solution found after hill climbing
+	 */
 	public double applyHeuristic(Solution currentSolution, double dos, double iom) {
 		// TODO Auto-generated method stub
 		

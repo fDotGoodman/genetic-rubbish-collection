@@ -24,6 +24,11 @@ import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.random.RandomHelper;
 
+/**
+ * Collector class extending the Agent object. The collector is the main acting agent in this, it maps rubbish, optimises its TSP route, then actions the path
+ * @author Felix
+ *
+ */
 public class Collector extends Agent {
 
 	public ContinuousSpace<Object> space;
@@ -44,7 +49,19 @@ public class Collector extends Agent {
 	private boolean removed, removeAllRubbishFlag;
 	
 	
-	
+	/**
+	 * Constructor to instantiate the variables
+	 * @param space The ContinuousSpace projection
+	 * @param grid The Grid Projection
+	 * @param speed The distance this agent can move by when moving in either the map or action states
+	 * @param viewDistance The distance the collector can see for when mapping out rubbish in the Map phase
+	 * @param removeAllRubbish A boolean flag to denote whether or not the Collector collects all rubbish it encounters in the Action phase, regardless of its inclusion in its optimised route
+	 * @param populationSize The number of individuals in the GA population
+	 * @param maxIterations The maximum number of iterations/epochs the GA will run for
+	 * @param generationalGap Double variable denoting the percentage of those in the GA population that are replaced by fitter offspring
+	 * @param dos The Depth of Search parameter for hill climbing
+	 * @param iom The Intensity of Mutation parameter for mutation heuristics
+	 */
 	public Collector(ContinuousSpace<Object> space, 
 			Grid<Object> grid, 
 			int speed, int viewDistance, 
@@ -76,6 +93,9 @@ public class Collector extends Agent {
 	
 	
 	@ScheduledMethod(start = 1, interval = 1)
+	/**
+	 * A scheduled method that determining the agent actions at each tick of the simulation
+	 */
 	public void step() {
 		switch(state) {
 			case MAP_STATE:
@@ -157,7 +177,9 @@ public class Collector extends Agent {
 		}
 	}
 	
-	
+	/**
+	 * Transition method to finish the Map phase of the simulation, and begin the Memetic Algorithm
+	 */
 	public void moveToCalculationPhase() {
 		this.state = AgentState.CALCULATION_STATE;
 		this.gaState = GeneticAlgorithmState.INITIALISING;
@@ -165,10 +187,16 @@ public class Collector extends Agent {
 		System.out.println("Moving to Calculation State...");
 	}
 	
+	/**
+	 * Transition function to move the Collector to the action state
+	 */
 	public void moveToActionPhase() {
 		this.state = AgentState.ACTION_STATE;
 	}
 	
+	/**
+	 * Method to initialise the Memetic Algorithm, instantiating a population and creating the relevant heuristics
+	 */
 	public void startGeneticAlgorithm() {
 		System.out.println("Initialising Genetic Algorithm...");
 		currentSolution.printRoute();
@@ -189,6 +217,9 @@ public class Collector extends Agent {
 		numberOfOffspring = (int) Math.floor(population.size() * generationalGap);
 	}
 	
+	/**
+	 * Method to process the next Memetic Algorithm iteration, involving parent selection, crossover, mutation, hill climbing and replacement
+	 */
 	public void nextGeneticAlgorithmIteration() {
 		System.out.println("Epoch: " + this.currentIteration);
 		offspring = new ArrayList<Solution>();
@@ -215,6 +246,9 @@ public class Collector extends Agent {
 		
 	}
 	
+	/**
+	 * Method to finish the Memetic Algorithm, and transition the Collector to the action phase
+	 */
 	public void finishGeneticAlgorithm() {
 		Solution bestSolution = population.get(0);
 		double bestFitness = population.get(0).getCost();
@@ -231,6 +265,10 @@ public class Collector extends Agent {
 		this.state = AgentState.ACTION_STATE;
 	}
 	
+	/**
+	 * Method implementing the Roulette Wheel parent selection algorithm
+	 * @return A solution array containing both chosen parents
+	 */
 	public Solution[] rouletteWheelSelection() {
 		Solution[] parents = new Solution[2];
 		Random r = new Random();

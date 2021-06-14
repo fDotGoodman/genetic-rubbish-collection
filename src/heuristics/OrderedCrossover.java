@@ -9,10 +9,21 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import components.Solution;
 import repast.simphony.space.grid.GridPoint;
-
+/**
+ * Class that implements the OX1 crossover heuristic between two parents to produce offspring
+ * @author Felix
+ *
+ */
 public class OrderedCrossover implements CrossoverHeuristic {
 
 	@Override
+	/**
+	 * @param parent1 The first parent
+	 * @param parent2 The second parent
+	 * @param dos The Depth of Search parameter
+	 * @param iom The Intensity of Mutation parameter
+	 * @return The offspring solution generated from this crossover heuristic
+	 */
 	public Solution applyHeuristic(Solution parent1, Solution parent2, double dos, double iom) {
 		// TODO Auto-generated method stub
 		Random r = new Random();
@@ -95,11 +106,23 @@ public class OrderedCrossover implements CrossoverHeuristic {
 		return offspring;
 	}
 	
+	/**
+	 * Function to return the larger of two integers (Returns the first if they are equal)
+	 * @param a The first integer
+	 * @param b The second integer
+	 * @return The larger of the two integers
+	 */
 	public int larger(int a, int b) {
 		int ret = (a < b) ? b : a;
 		return ret;
 	}
 	
+	/**
+	 * Function to return the smaller of two integers (Returns the second if they are equal)
+	 * @param a The first integer
+	 * @param b The second integer
+	 * @return The smaller of the two integers
+	 */
 	public int smaller(int a, int b) {
 		int ret = (a < b) ? a : b;
 		return ret;

@@ -24,6 +24,11 @@ import repast.simphony.space.grid.GridBuilderParameters;
 import repast.simphony.space.grid.SimpleGridAdder;
 import repast.simphony.space.grid.WrapAroundBorders;
 
+/**
+ * Simulation building class that implements a ContextBuilder
+ * @author Felix
+ *
+ */
 public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 
 	ContinuousSpace<Object> space;
@@ -33,6 +38,9 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	boolean collectAllRubbish;
 	
 	@Override
+	/**
+	 * Method to build the simulation context
+	 */
 	public Context build(Context<Object> context) {
 		context.setId("genetic-rubbish-collection");
 		
@@ -79,6 +87,10 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		return context;
 	}
 	
+	/**
+	 * Method to trigger the end of the Map phase in all collectors
+	 * @param context The simulation context
+	 */
 	public void triggerMapEnd(Context context) {
 		Stream<Collector> collectorStream = context.getObjectsAsStream(Collector.class);
 		List<Collector> collectorList = collectorStream.collect(Collectors.toList());
@@ -86,6 +98,11 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		
 	}
 	
+	/**
+	 * Method to translate the Multiplier string parameters (DoS and IoM) to usable integers for the heuristics
+	 * @param dosString The string parameter
+	 * @return The corresponding returned integer
+	 */
 	public int translateGAMultiplierParameter(String dosString) {
 		if(dosString == "2x") {
 			return 2;
