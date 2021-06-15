@@ -15,11 +15,11 @@ import java.util.Random;
 import components.AgentState;
 import components.MemeticAlgorithmState;
 import components.Solution;
-import heuristics.AdjacentSwap;
 import heuristics.DavisHillClimbing;
 import heuristics.OrderedCrossover;
 import heuristics.RandomReinsertion;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
 import repast.simphony.random.RandomHelper;
@@ -39,6 +39,7 @@ public class Collector extends Agent {
 	private MemeticAlgorithmState gaState;
 	private ArrayList<Solution> population;
 	private ArrayList<Solution> offspring;
+	private GridPoint targetLocation;
 	
 	private RandomReinsertion mutationHeuristic;
 	private OrderedCrossover crossoverHeuristic;
@@ -64,7 +65,8 @@ public class Collector extends Agent {
 	 */
 	public Collector(ContinuousSpace<Object> space, 
 			Grid<Object> grid, 
-			int speed, int viewDistance, 
+			int speed, 
+			int viewDistance, 
 			boolean removeAllRubbish, 
 			int populationSize, 
 			int maxIterations,
@@ -89,6 +91,7 @@ public class Collector extends Agent {
 		this.dos = dos;
 		this.iom = iom;
 		r = new Random();
+		this.targetLocation = new GridPoint(r.nextInt(this.grid.getDimensions().getWidth()), r.nextInt(this.grid.getDimensions().getWidth()));
 	}
 	
 	
@@ -103,7 +106,7 @@ public class Collector extends Agent {
 				GridCellNgh<Rubbish> nghCreator = new GridCellNgh<Rubbish>(grid, pt, Rubbish.class, viewDistance, viewDistance);
 				List<GridCell<Rubbish>> gridCells = nghCreator.getNeighborhood(true);
 				SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
-				int maxCount = -1;
+
 				for(GridCell<Rubbish> cell : gridCells) {
 					if(cell.size() > 0) {
 						if(!currentSolution.getSolutionRepresentation().contains(cell.getPoint())) {
@@ -115,7 +118,13 @@ public class Collector extends Agent {
 						}
 					}
 				}
-				moveRandomly(space, grid, r, speed);
+				
+				if( Solution.calculateEuclideanDistance( pt,  targetLocation)  < viewDistance) {
+					this.targetLocation = new GridPoint(r.nextInt(this.grid.getDimensions().getWidth()), r.nextInt(this.grid.getDimensions().getWidth()));
+				}
+				else {
+					moveByDistance(space, grid, targetLocation, speed);
+				}
 				
 				break;
 			

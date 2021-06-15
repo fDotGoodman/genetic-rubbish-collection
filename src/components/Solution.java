@@ -152,7 +152,7 @@ public class Solution {
 	 * @param point2 The second GridPoint
 	 * @return The euclidean (straight line) distance between them
 	 */
-	public double calculateEuclideanDistance(GridPoint point1, GridPoint point2) {
+	public static double calculateEuclideanDistance(GridPoint point1, GridPoint point2) {
 		return Math.sqrt(Math.pow(point1.getX() - point2.getX(), 2) + Math.pow(point1.getY() - point2.getY(), 2));
 	}
 	
