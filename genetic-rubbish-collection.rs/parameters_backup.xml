@@ -5,11 +5,6 @@
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
-				<parameter name="mapTerminationTick" displayName="MAP_PHASE End Tick" type="int" 
-						defaultValue="100" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-											/>
 				<parameter name="intensityOfMutation" displayName="Intensity of Mutation" type="java.lang.String" 
 						defaultValue="1x" 
 						isReadOnly="false" 
@@ -22,7 +17,7 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
 				<parameter name="geneticAlgorithmCutOffTick" displayName="Max Memetic Algorithm Iterations" type="int" 
-						defaultValue="1000" 
+						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
@@ -58,6 +53,11 @@
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 												values="1x 2x 4x 8x 10x "
+											/>
+				<parameter name="mapPhaseLength" displayName="Map Phase Tick Length" type="int" 
+						defaultValue="100" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
 				<parameter name="viewDistance" displayName="Collector View Distance" type="int" 
 						defaultValue="5" 

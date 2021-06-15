@@ -34,7 +34,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	ContinuousSpace<Object> space;
 	Grid<Object> grid;
 	double generationalGap;
-	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance, maxGeneticAlgorithmIterations, populationSize, dos, iom;
+	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance, maxMemeticAlgorithmIterations, populationSize, dos, iom;
 	boolean collectAllRubbish;
 	
 	@Override
@@ -49,10 +49,10 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		this.rubbishCount = parameters.getInteger("rubbishCount");
 		this.collectorCount = parameters.getInteger("collectorCount");
 		this.collectorSpeed = parameters.getInteger("collectorSpeed");
-		this.finishMapTick = parameters.getInteger("mapTerminationTick");
+		this.finishMapTick = parameters.getInteger("mapPhaseLength");
 		this.viewDistance = parameters.getInteger("viewDistance");
 		this.populationSize = parameters.getInteger("populationSize");
-		this.maxGeneticAlgorithmIterations = parameters.getInteger("geneticAlgorithmCutOffTick");
+		this.maxMemeticAlgorithmIterations = parameters.getInteger("geneticAlgorithmCutOffTick");
 		this.collectAllRubbish = parameters.getBoolean("collectAllRubbish");
 		this.generationalGap = parameters.getDouble("generationalGap");
 		this.dos = translateGAMultiplierParameter(parameters.getString("depthOfSearch"));
@@ -75,7 +75,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		}
 		
 		for(int i = 0; i < collectorCount; i++) {
-			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize, maxGeneticAlgorithmIterations, generationalGap, dos, iom, finishMapTick));
+			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize, maxMemeticAlgorithmIterations, generationalGap, dos, iom, finishMapTick));
 		}
 		
 		

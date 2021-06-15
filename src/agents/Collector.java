@@ -36,7 +36,7 @@ public class Collector extends Agent {
 	private AgentState state;
 	private Random r;
 	private Solution currentSolution;
-	private MemeticAlgorithmState gaState;
+	private MemeticAlgorithmState maState;
 	private ArrayList<Solution> population;
 	private ArrayList<Solution> offspring;
 	private GridPoint targetLocation;
@@ -57,9 +57,9 @@ public class Collector extends Agent {
 	 * @param speed The distance this agent can move by when moving in either the map or action states
 	 * @param viewDistance The distance the collector can see for when mapping out rubbish in the Map phase
 	 * @param removeAllRubbish A boolean flag to denote whether or not the Collector collects all rubbish it encounters in the Action phase, regardless of its inclusion in its optimised route
-	 * @param populationSize The number of individuals in the GA population
+	 * @param populationSize The number of individuals in the MA population
 	 * @param maxIterations The maximum number of iterations/epochs the GA will run for
-	 * @param generationalGap Double variable denoting the percentage of those in the GA population that are replaced by fitter offspring
+	 * @param generationalGap Double variable denoting the percentage of those in the MA population that are replaced by fitter offspring
 	 * @param dos The Depth of Search parameter for hill climbing
 	 * @param iom The Intensity of Mutation parameter for mutation heuristics
 	 */
@@ -81,7 +81,7 @@ public class Collector extends Agent {
 		this.speed = speed;
 		this.state = AgentState.MAP_STATE;
 		this.viewDistance = viewDistance;
-		this.gaState = MemeticAlgorithmState.NOT_STARTED;
+		this.maState = MemeticAlgorithmState.NOT_STARTED;
 		this.currentSolution = new Solution(this);
 		this.removeAllRubbishFlag = removeAllRubbish;
 		this.removed = false;
@@ -140,24 +140,24 @@ public class Collector extends Agent {
 			
 			case CALCULATION_STATE:
 				
-				if(gaState == MemeticAlgorithmState.NOT_STARTED) {
+				if(maState == MemeticAlgorithmState.NOT_STARTED) {
 					
 				}
-				else if(gaState == MemeticAlgorithmState.INITIALISING) {
-					startGeneticAlgorithm();
+				else if(maState == MemeticAlgorithmState.INITIALISING) {
+					startMemeticAlgorithm();
 				}
-				else if(gaState == MemeticAlgorithmState.ONGOING) {
+				else if(maState == MemeticAlgorithmState.ONGOING) {
 					if(currentCalculationIteration < maxCalculationIterations) {
-						nextGeneticAlgorithmIteration();
+						nextMemeticAlgorithmIteration();
 					}
 					else {
-						gaState = MemeticAlgorithmState.COMPLETE;
+						maState = MemeticAlgorithmState.COMPLETE;
 					}
 					currentCalculationIteration++;
 					
 				}
-				else if(gaState == MemeticAlgorithmState.COMPLETE) {
-					finishGeneticAlgorithm();
+				else if(maState == MemeticAlgorithmState.COMPLETE) {
+					finishMemeticAlgorithm();
 				}
 				
 				break;
@@ -184,7 +184,7 @@ public class Collector extends Agent {
 				else {
 					if(goAgain == true) {
 						this.state = AgentState.MAP_STATE;
-						this.gaState = MemeticAlgorithmState.NOT_STARTED;
+						this.maState = MemeticAlgorithmState.NOT_STARTED;
 						this.currentSolution = new Solution(this);
 						this.removed = false;
 						this.goAgain = false;
@@ -215,13 +215,13 @@ public class Collector extends Agent {
 	public void moveToCalculationPhase() {
 		if(this.currentSolution.getSolutionRepresentation().size() < 4) {
 			System.out.println("[INFO] - MAP_STATE Yielded tour of size < 4 - Skipping Memetic Algorithm");
-			this.gaState = MemeticAlgorithmState.COMPLETE;
+			this.maState = MemeticAlgorithmState.COMPLETE;
 			moveToActionState();
 		}
 		else {
 				
 			this.state = AgentState.CALCULATION_STATE;
-			this.gaState = MemeticAlgorithmState.INITIALISING;
+			this.maState = MemeticAlgorithmState.INITIALISING;
 			this.currentSolution.finaliseCollection();
 			System.out.println("[INFO] - MAP_STATE Yielded tour of size >= 4 - Initiating Memetic Algorithm");
 		}
@@ -238,7 +238,7 @@ public class Collector extends Agent {
 	/**
 	 * Method to initialise the Memetic Algorithm, instantiating a population and creating the relevant heuristics
 	 */
-	public void startGeneticAlgorithm() {
+	public void startMemeticAlgorithm() {
 		System.out.println("[INFO] - Initialising Memetic Algorithm...");
 		currentSolution.printRoute();
 		population = new ArrayList<Solution>();
@@ -253,7 +253,7 @@ public class Collector extends Agent {
 		this.mutationHeuristic = new RandomReinsertion();
 		this.crossoverHeuristic = new OrderedCrossover();
 		this.hillClimbingHeuristic = new DavisHillClimbing();
-		this.gaState = MemeticAlgorithmState.ONGOING;
+		this.maState = MemeticAlgorithmState.ONGOING;
 		
 		numberOfOffspring = (int) Math.floor(population.size() * generationalGap);
 	}
@@ -261,7 +261,7 @@ public class Collector extends Agent {
 	/**
 	 * Method to process the next Memetic Algorithm iteration, involving parent selection, crossover, mutation, hill climbing and replacement
 	 */
-	public void nextGeneticAlgorithmIteration() {
+	public void nextMemeticAlgorithmIteration() {
 		if(this.currentCalculationIteration % 10 == 0) {
 			System.out.println("[INFO] - Epoch: " + this.currentCalculationIteration);	
 		}
@@ -292,7 +292,7 @@ public class Collector extends Agent {
 	/**
 	 * Method to finish the Memetic Algorithm, and transition the Collector to the action phase
 	 */
-	public void finishGeneticAlgorithm() {
+	public void finishMemeticAlgorithm() {
 		Solution bestSolution = population.get(0);
 		double bestFitness = population.get(0).getCost();
 		for(int i = 1; i < population.size(); i++) {
@@ -304,7 +304,7 @@ public class Collector extends Agent {
 		
 		this.currentSolution = bestSolution;
 		currentSolution.printRoute();
-		System.out.println("[INFO] - Genetic Algorithm Complete!");
+		System.out.println("[INFO] - Memetic Algorithm Complete!");
 		this.state = AgentState.ACTION_STATE;
 	}
 	
