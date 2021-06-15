@@ -88,6 +88,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	}
 	
 	/**
+	 * @deprecated
 	 * Method to trigger the end of the Map phase in all collectors
 	 * @param context The simulation context
 	 */
@@ -99,7 +100,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 	}
 	
 	/**
-	 * @deprecated
+	 * 
 	 * Method to translate the Multiplier string parameters (DoS and IoM) to usable integers for the heuristics
 	 * @param dosString The string parameter
 	 * @return The corresponding returned integer
