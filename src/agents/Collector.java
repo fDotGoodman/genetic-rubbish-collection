@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 import components.AgentState;
-import components.GeneticAlgorithmState;
+import components.MemeticAlgorithmState;
 import components.Solution;
 import heuristics.AdjacentSwap;
 import heuristics.DavisHillClimbing;
@@ -36,7 +36,7 @@ public class Collector extends Agent {
 	private AgentState state;
 	private Random r;
 	private Solution currentSolution;
-	private GeneticAlgorithmState gaState;
+	private MemeticAlgorithmState gaState;
 	private ArrayList<Solution> population;
 	private ArrayList<Solution> offspring;
 	
@@ -78,7 +78,7 @@ public class Collector extends Agent {
 		this.speed = speed;
 		this.state = AgentState.MAP_STATE;
 		this.viewDistance = viewDistance;
-		this.gaState = GeneticAlgorithmState.NOT_STARTED;
+		this.gaState = MemeticAlgorithmState.NOT_STARTED;
 		this.currentSolution = new Solution(this);
 		this.removeAllRubbishFlag = removeAllRubbish;
 		this.removed = false;
@@ -121,23 +121,23 @@ public class Collector extends Agent {
 			
 			case CALCULATION_STATE:
 				
-				if(gaState == GeneticAlgorithmState.NOT_STARTED) {
+				if(gaState == MemeticAlgorithmState.NOT_STARTED) {
 					
 				}
-				else if(gaState == GeneticAlgorithmState.INITIALISING) {
+				else if(gaState == MemeticAlgorithmState.INITIALISING) {
 					startGeneticAlgorithm();
 				}
-				else if(gaState == GeneticAlgorithmState.ONGOING) {
+				else if(gaState == MemeticAlgorithmState.ONGOING) {
 					if(currentIteration < maxIterations) {
 						nextGeneticAlgorithmIteration();
 					}
 					else {
-						gaState = GeneticAlgorithmState.COMPLETE;
+						gaState = MemeticAlgorithmState.COMPLETE;
 					}
 					currentIteration++;
 					
 				}
-				else if(gaState == GeneticAlgorithmState.COMPLETE) {
+				else if(gaState == MemeticAlgorithmState.COMPLETE) {
 					finishGeneticAlgorithm();
 				}
 				
@@ -182,7 +182,7 @@ public class Collector extends Agent {
 	 */
 	public void moveToCalculationPhase() {
 		this.state = AgentState.CALCULATION_STATE;
-		this.gaState = GeneticAlgorithmState.INITIALISING;
+		this.gaState = MemeticAlgorithmState.INITIALISING;
 		this.currentSolution.finaliseCollection();
 		System.out.println("Moving to Calculation State...");
 	}
@@ -212,7 +212,7 @@ public class Collector extends Agent {
 		this.mutationHeuristic = new RandomReinsertion();
 		this.crossoverHeuristic = new OrderedCrossover();
 		this.hillClimbingHeuristic = new DavisHillClimbing();
-		this.gaState = GeneticAlgorithmState.ONGOING;
+		this.gaState = MemeticAlgorithmState.ONGOING;
 		
 		numberOfOffspring = (int) Math.floor(population.size() * generationalGap);
 	}
