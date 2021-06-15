@@ -8,7 +8,7 @@
     </entry>
     <entry>
       <string>agents.Rubbish</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
   </styles>
   <editedStyles>
@@ -18,7 +18,7 @@
     </entry>
     <entry>
       <string>agents.Rubbish</string>
-      <null/>
+      <string>agents.Rubbish.style_1.xml</string>
     </entry>
   </editedStyles>
   <netStyles/>
@@ -31,7 +31,7 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>1957837617</hashCode>
+    <hashCode>-1943544706</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>grid</layoutProjection>
