@@ -59,9 +59,9 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		this.iom = translateGAMultiplierParameter(parameters.getString("intensityOfMutation"));
 
 		
-	    ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-	    ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(finishMapTick);
-	    schedule.schedule(scheduleParams, this, "triggerMapEnd", context);
+	    //ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+	    //ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(finishMapTick);
+	    //schedule.schedule(scheduleParams, this, "triggerMapEnd", context);
 		
 		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
 		space = spaceFactory.createContinuousSpace("space", context, new RandomCartesianAdder<Object>(), new repast.simphony.space.continuous.WrapAroundBorders(), dimensions, dimensions);
@@ -75,7 +75,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		}
 		
 		for(int i = 0; i < collectorCount; i++) {
-			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize, maxGeneticAlgorithmIterations, generationalGap, dos, iom));
+			context.add(new Collector(space, grid, collectorSpeed, viewDistance, collectAllRubbish, populationSize, maxGeneticAlgorithmIterations, generationalGap, dos, iom, finishMapTick));
 		}
 		
 		

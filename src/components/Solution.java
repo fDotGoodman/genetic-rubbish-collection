@@ -176,7 +176,7 @@ public class Solution {
 	 * Method to print out the TSP path
 	 */
 	public void printRoute() {
-		String route = new String("Cost: ");
+		String route = new String("[ROUTE INFO] - Cost: ");
 		if(cost == 0) {
 			route += " Not Yet Calculated, ";
 		}

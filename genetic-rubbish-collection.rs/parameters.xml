@@ -6,7 +6,7 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
 				<parameter name="mapTerminationTick" displayName="MAP_PHASE End Tick" type="int" 
-						defaultValue="500" 
+						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
@@ -22,7 +22,7 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
 				<parameter name="geneticAlgorithmCutOffTick" displayName="Max Memetic Algorithm Iterations" type="int" 
-						defaultValue="1000" 
+						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
@@ -32,7 +32,7 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
 				<parameter name="collectAllRubbish" displayName="Do collectors collect all rubbish regardless of their TSP route?" type="boolean" 
-						defaultValue="true" 
+						defaultValue="false" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 												values="true false "
@@ -44,7 +44,7 @@
 												values="0.1 0.2 0.3 0.4 0.5 "
 											/>
 				<parameter name="collectorCount" displayName="Collector Count" type="int" 
-						defaultValue="2" 
+						defaultValue="1" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>

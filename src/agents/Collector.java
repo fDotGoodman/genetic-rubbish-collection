@@ -46,8 +46,8 @@ public class Collector extends Agent {
 	private DavisHillClimbing hillClimbingHeuristic;
 	
 	private double generationalGap;
-	private int speed, viewDistance, populationSize, currentIteration, maxIterations, numberOfOffspring, dos, iom;
-	private boolean removed, removeAllRubbishFlag;
+	private int speed, viewDistance, populationSize, currentCalculationIteration, maxCalculationIterations, numberOfOffspring, dos, iom, maxMapIterations, currentMapIteration;
+	private boolean removed, removeAllRubbishFlag, goAgain;
 	
 	
 	/**
@@ -72,7 +72,8 @@ public class Collector extends Agent {
 			int maxIterations,
 			double generationalGap,
 			int dos,
-			int iom
+			int iom,
+			int maxMapIterations
 			) {
 		
 		this.space = space;
@@ -84,12 +85,15 @@ public class Collector extends Agent {
 		this.currentSolution = new Solution(this);
 		this.removeAllRubbishFlag = removeAllRubbish;
 		this.removed = false;
-		this.currentIteration = 0;
+		this.goAgain = false;
+		this.currentCalculationIteration = 0;
 		this.populationSize = populationSize;
-		this.maxIterations = maxIterations;
+		this.maxCalculationIterations = maxIterations;
 		this.generationalGap = generationalGap;
 		this.dos = dos;
 		this.iom = iom;
+		this.maxMapIterations = maxMapIterations;
+		this.currentMapIteration = 0;
 		r = new Random();
 		this.targetLocation = new GridPoint(r.nextInt(this.grid.getDimensions().getWidth()), r.nextInt(this.grid.getDimensions().getWidth()));
 	}
@@ -112,6 +116,7 @@ public class Collector extends Agent {
 						if(!currentSolution.getSolutionRepresentation().contains(cell.getPoint())) {
 							//System.out.println("Added rubbish at coordinates X=" + cell.getPoint().getX() + ", Y=" + cell.getPoint().getY());
 							currentSolution.addPoint(cell.getPoint());
+							this.goAgain = true;
 						}
 						else {
 							//System.out.println("Not adding X=" + cell.getPoint().getX() + ", Y=" + cell.getPoint().getY());
@@ -126,6 +131,11 @@ public class Collector extends Agent {
 					moveByDistance(space, grid, targetLocation, speed);
 				}
 				
+				if(currentMapIteration >= maxMapIterations) {
+					this.moveToCalculationPhase();
+				}
+				currentMapIteration++;
+				
 				break;
 			
 			case CALCULATION_STATE:
@@ -137,13 +147,13 @@ public class Collector extends Agent {
 					startGeneticAlgorithm();
 				}
 				else if(gaState == MemeticAlgorithmState.ONGOING) {
-					if(currentIteration < maxIterations) {
+					if(currentCalculationIteration < maxCalculationIterations) {
 						nextGeneticAlgorithmIteration();
 					}
 					else {
 						gaState = MemeticAlgorithmState.COMPLETE;
 					}
-					currentIteration++;
+					currentCalculationIteration++;
 					
 				}
 				else if(gaState == MemeticAlgorithmState.COMPLETE) {
@@ -172,8 +182,21 @@ public class Collector extends Agent {
 					removed = false;
 				}
 				else {
-					System.out.println("Successfully collected all rubbish. Switching off...");
-					this.state = AgentState.DORMANT_STATE;
+					if(goAgain == true) {
+						this.state = AgentState.MAP_STATE;
+						this.gaState = MemeticAlgorithmState.NOT_STARTED;
+						this.currentSolution = new Solution(this);
+						this.removed = false;
+						this.goAgain = false;
+						this.currentCalculationIteration = 0;
+						this.currentMapIteration = 0;
+						System.out.println("[INFO] - Moving back to MAP STATE");
+					}
+					else {
+						System.out.println("[SUCCESS] - Successfully collected all rubbish. Switching off...");
+						this.state = AgentState.DORMANT_STATE;
+					}
+
 				}				
 				
 				break;
@@ -190,16 +213,25 @@ public class Collector extends Agent {
 	 * Transition method to finish the Map phase of the simulation, and begin the Memetic Algorithm
 	 */
 	public void moveToCalculationPhase() {
-		this.state = AgentState.CALCULATION_STATE;
-		this.gaState = MemeticAlgorithmState.INITIALISING;
-		this.currentSolution.finaliseCollection();
-		System.out.println("Moving to Calculation State...");
+		if(this.currentSolution.getSolutionRepresentation().size() < 4) {
+			System.out.println("[INFO] - MAP_STATE Yielded tour of size < 4 - Skipping Memetic Algorithm");
+			this.gaState = MemeticAlgorithmState.COMPLETE;
+			moveToActionState();
+		}
+		else {
+				
+			this.state = AgentState.CALCULATION_STATE;
+			this.gaState = MemeticAlgorithmState.INITIALISING;
+			this.currentSolution.finaliseCollection();
+			System.out.println("[INFO] - MAP_STATE Yielded tour of size >= 4 - Initiating Memetic Algorithm");
+		}
+
 	}
 	
 	/**
 	 * Transition function to move the Collector to the action state
 	 */
-	public void moveToActionPhase() {
+	public void moveToActionState() {
 		this.state = AgentState.ACTION_STATE;
 	}
 	
@@ -207,7 +239,7 @@ public class Collector extends Agent {
 	 * Method to initialise the Memetic Algorithm, instantiating a population and creating the relevant heuristics
 	 */
 	public void startGeneticAlgorithm() {
-		System.out.println("Initialising Genetic Algorithm...");
+		System.out.println("[INFO] - Initialising Memetic Algorithm...");
 		currentSolution.printRoute();
 		population = new ArrayList<Solution>();
 		for(int i = 0; i < populationSize; i++) {
@@ -230,7 +262,9 @@ public class Collector extends Agent {
 	 * Method to process the next Memetic Algorithm iteration, involving parent selection, crossover, mutation, hill climbing and replacement
 	 */
 	public void nextGeneticAlgorithmIteration() {
-		System.out.println("Epoch: " + this.currentIteration);
+		if(this.currentCalculationIteration % 10 == 0) {
+			System.out.println("[INFO] - Epoch: " + this.currentCalculationIteration);	
+		}
 		offspring = new ArrayList<Solution>();
 		Solution[] parents;
 		for(int i = 0; i < numberOfOffspring; i++) {
@@ -270,7 +304,7 @@ public class Collector extends Agent {
 		
 		this.currentSolution = bestSolution;
 		currentSolution.printRoute();
-		System.out.println("Genetic Algorithm Complete!");
+		System.out.println("[INFO] - Genetic Algorithm Complete!");
 		this.state = AgentState.ACTION_STATE;
 	}
 	
