@@ -62,6 +62,7 @@ public class Collector extends Agent {
 	 * @param generationalGap Double variable denoting the percentage of those in the MA population that are replaced by fitter offspring
 	 * @param dos The Depth of Search parameter for hill climbing
 	 * @param iom The Intensity of Mutation parameter for mutation heuristics
+	 * @param maxMapIterations The number of iterations in a MAP_STATE of the collector
 	 */
 	public Collector(ContinuousSpace<Object> space, 
 			Grid<Object> grid, 
