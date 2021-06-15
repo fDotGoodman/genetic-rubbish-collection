@@ -119,7 +119,7 @@ public class Collector extends Agent {
 					}
 				}
 				
-				if( Solution.calculateEuclideanDistance( pt,  targetLocation)  < viewDistance) {
+				if( Solution.calculateEuclideanDistance(pt, targetLocation) < viewDistance) {
 					this.targetLocation = new GridPoint(r.nextInt(this.grid.getDimensions().getWidth()), r.nextInt(this.grid.getDimensions().getWidth()));
 				}
 				else {
