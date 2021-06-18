@@ -15,6 +15,7 @@ import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ISchedule;
 import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
@@ -33,6 +34,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 
 	ContinuousSpace<Object> space;
 	Grid<Object> grid;
+	Context<Object> context;
 	double generationalGap;
 	int dimensions, rubbishCount, collectorCount, collectorSpeed, finishMapTick, viewDistance, maxMemeticAlgorithmIterations, populationSize, dos, iom;
 	boolean collectAllRubbish;
@@ -83,7 +85,7 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 			NdPoint pt = space.getLocation(obj);
 			grid.moveTo(obj, (int)pt.getX(), (int)pt.getY());
 		}
-		
+		this.context = context;
 		return context;
 	}
 	
@@ -120,6 +122,5 @@ public class GeneticRubbishCollectionBuilder implements ContextBuilder<Object> {
 		}
 		return 1;
 	}
-	
 	
 }

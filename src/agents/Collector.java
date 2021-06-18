@@ -5,12 +5,15 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
+import repast.simphony.util.ContextUtils;
 import repast.simphony.util.SimUtilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import components.AgentState;
 import components.MemeticAlgorithmState;
@@ -18,6 +21,7 @@ import components.Solution;
 import heuristics.DavisHillClimbing;
 import heuristics.OrderedCrossover;
 import heuristics.RandomReinsertion;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.space.grid.GridCell;
@@ -35,7 +39,7 @@ public class Collector extends Agent {
 	public Grid<Object> grid;
 	private AgentState state;
 	private Random r;
-	private Solution currentSolution;
+	private Solution currentSolution, worstSolution;
 	private MemeticAlgorithmState maState;
 	private ArrayList<Solution> population;
 	private ArrayList<Solution> offspring;
@@ -45,8 +49,8 @@ public class Collector extends Agent {
 	private OrderedCrossover crossoverHeuristic;
 	private DavisHillClimbing hillClimbingHeuristic;
 	
-	private double generationalGap;
-	private int speed, viewDistance, populationSize, currentCalculationIteration, maxCalculationIterations, numberOfOffspring, dos, iom, maxMapIterations, currentMapIteration;
+	private double generationalGap, bestChange;
+	private int speed, viewDistance, populationSize, currentCalculationIteration, maxCalculationIterations, numberOfOffspring, dos, iom, maxMapIterations, currentMapIteration, rubbishCollected;
 	private boolean removed, removeAllRubbishFlag, goAgain;
 	
 	
@@ -95,6 +99,7 @@ public class Collector extends Agent {
 		this.iom = iom;
 		this.maxMapIterations = maxMapIterations;
 		this.currentMapIteration = 0;
+		this.rubbishCollected = 0;
 		r = new Random();
 		this.targetLocation = new GridPoint(r.nextInt(this.grid.getDimensions().getWidth()), r.nextInt(this.grid.getDimensions().getWidth()));
 	}
@@ -174,6 +179,7 @@ public class Collector extends Agent {
 						if(removeAllRubbishFlag == true || removed == true) {
 							for(Rubbish rub : cell.items()) {
 								rub.collect();
+								this.rubbishCollected++;
 							}
 						}
 					}
@@ -194,7 +200,7 @@ public class Collector extends Agent {
 						System.out.println("[INFO] - Moving back to MAP STATE");
 					}
 					else {
-						System.out.println("[SUCCESS] - Successfully collected all rubbish. Switching off...");
+						System.out.println("[SUCCESS] - Successfully collected all rubbish found (" + rubbishCollected +"). Switching off...");
 						this.state = AgentState.DORMANT_STATE;
 					}
 
@@ -241,19 +247,21 @@ public class Collector extends Agent {
 	 */
 	public void startMemeticAlgorithm() {
 		System.out.println("[INFO] - Initialising Memetic Algorithm...");
-		currentSolution.printRoute();
-		population = new ArrayList<Solution>();
-		for(int i = 0; i < populationSize; i++) {
-			Solution tmp = currentSolution.deepClone();
-			ArrayList<GridPoint> newRepresentation = tmp.getSolutionRepresentation();
-			Collections.shuffle(newRepresentation);
-			tmp.setSolutionRepresentation(newRepresentation);
-			population.add(tmp);
-		}
 		
 		this.mutationHeuristic = new RandomReinsertion();
 		this.crossoverHeuristic = new OrderedCrossover();
 		this.hillClimbingHeuristic = new DavisHillClimbing();
+		currentSolution.printRoute();
+		population = new ArrayList<Solution>();
+		for(int i = 0; i < populationSize; i++) {
+			Solution tmp = currentSolution.deepClone();
+			mutationHeuristic.applyHeuristic(tmp, dos, iom);
+			population.add(tmp);
+		}
+		if(this.worstSolution == null || this.worstSolution.getSolutionLength() < currentSolution.getSolutionLength()) {
+			this.worstSolution = currentSolution.deepClone();
+		}
+
 		this.maState = MemeticAlgorithmState.ONGOING;
 		
 		numberOfOffspring = (int) Math.floor(population.size() * generationalGap);
@@ -307,6 +315,10 @@ public class Collector extends Agent {
 		currentSolution.printRoute();
 		System.out.println("[INFO] - Memetic Algorithm Complete!");
 		this.state = AgentState.ACTION_STATE;
+		
+		if(this.worstSolution.getSolutionLength() == this.currentSolution.getSolutionLength()) {
+			this.bestChange = worstSolution.getCost() - this.currentSolution.getCost();
+		}
 	}
 	
 	/**
@@ -352,5 +364,18 @@ public class Collector extends Agent {
 		parents[1] = population.get(parent2);
 		return parents;
 	}
-	
+
+	@ScheduledMethod(start = 1, interval = 1)
+	/**
+	 * Function to pause the simulation when all rubbish is collected, and return the change in solution fitness in the longest memetic algorithm
+	 */
+	public void finalTick() {
+		Stream<Rubbish> rubbishStream = ContextUtils.getContext(this).getObjectsAsStream(Rubbish.class);
+		List<Rubbish> rubbishList = rubbishStream.collect(Collectors.toList());
+		if(rubbishList.size() == 0) {
+			
+			System.out.println("[SUCCESS] - Found All Rubbish (" + rubbishCollected + ") Best Change in solution fitness = " + bestChange);
+			RunEnvironment.getInstance().pauseRun();
+		}
+	}
 }
